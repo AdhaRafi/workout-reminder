@@ -1,12 +1,16 @@
 package com.workoutreminder.app.ui.screens
 
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
+import com.workoutreminder.app.R
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
@@ -76,6 +80,7 @@ import com.workoutreminder.app.ui.theme.ActiveGreen
 import com.workoutreminder.app.ui.theme.ActiveGreenMuted
 import com.workoutreminder.app.ui.theme.ChipBackground
 import com.workoutreminder.app.ui.theme.CoralOrange
+import com.workoutreminder.app.ui.theme.CoralOrangeLight
 import com.workoutreminder.app.ui.theme.CoralOrangeMuted
 import com.workoutreminder.app.ui.theme.DarkBackground
 import com.workoutreminder.app.ui.theme.DarkBorder
@@ -429,106 +434,50 @@ private fun ExerciseCardItem(
 }
 
 // -------------------------------------------------------------
-// VISUAL DIAGRAM THUMBNAIL (Gambar Gerakan / Vektor Ilustrasi)
+// HELPER: PEMETAAN FOTO ASLI LATIHAN (Real Exercise Photos)
+// -------------------------------------------------------------
+fun getExercisePhotoDrawableRes(illustrationType: String): Int {
+    return when (illustrationType) {
+        "lat_pulldown", "cable_row" -> R.drawable.ex_lat_pulldown
+        "dumbbell_row" -> R.drawable.ex_dumbbell_row
+        "pushup" -> R.drawable.ex_pushup
+        "bench_press", "incline_press" -> R.drawable.ex_bench_press
+        "squat" -> R.drawable.ex_squat
+        "rdl", "hyperextension" -> R.drawable.ex_rdl
+        "lunges" -> R.drawable.ex_lunges
+        "shoulder_press", "face_pull" -> R.drawable.ex_shoulder_press
+        "lateral_raise" -> R.drawable.ex_lateral_raise
+        "bicep_curl", "hammer_curl" -> R.drawable.ex_bicep_curl
+        "tricep_pushdown" -> R.drawable.ex_tricep_pushdown
+        "plank" -> R.drawable.ex_plank
+        "bicycle_crunch", "leg_raises" -> R.drawable.ex_bicycle_crunch
+        else -> R.drawable.ex_bicep_curl
+    }
+}
+
+// -------------------------------------------------------------
+// VISUAL THUMBNAIL (Foto Asli Gerakan Latihan)
 // -------------------------------------------------------------
 @Composable
 fun MovementVisualThumbnail(
     illustrationType: String,
     accentColor: Color,
-    modifier: Modifier = Modifier.size(64.dp)
+    modifier: Modifier = Modifier.size(68.dp)
 ) {
+    val photoRes = getExercisePhotoDrawableRes(illustrationType)
     Box(
         modifier = modifier
-            .background(DarkSurfaceElevated, RoundedCornerShape(14.dp))
-            .clip(RoundedCornerShape(14.dp)),
+            .clip(RoundedCornerShape(14.dp))
+            .background(DarkSurfaceElevated)
+            .border(1.dp, accentColor.copy(alpha = 0.5f), RoundedCornerShape(14.dp)),
         contentAlignment = Alignment.Center
     ) {
-        Canvas(modifier = Modifier.fillMaxSize().padding(8.dp)) {
-            val w = size.width
-            val h = size.height
-            val primaryColor = accentColor
-            val secondaryColor = Color(0xFFE2E2E6)
-
-            when (illustrationType) {
-                "lat_pulldown" -> {
-                    // Bar atas
-                    drawLine(secondaryColor, Offset(w * 0.1f, h * 0.2f), Offset(w * 0.9f, h * 0.2f), strokeWidth = 5f)
-                    // Kabel ke bawah
-                    drawLine(Color.Gray, Offset(w * 0.5f, 0f), Offset(w * 0.5f, h * 0.2f), strokeWidth = 3f)
-                    // Panah arah tarikan ke bawah
-                    drawLine(primaryColor, Offset(w * 0.3f, h * 0.25f), Offset(w * 0.3f, h * 0.65f), strokeWidth = 4f)
-                    drawLine(primaryColor, Offset(w * 0.7f, h * 0.25f), Offset(w * 0.7f, h * 0.65f), strokeWidth = 4f)
-                    // Kepala & torso
-                    drawCircle(secondaryColor, radius = w * 0.12f, center = Offset(w * 0.5f, h * 0.45f))
-                    drawRoundRect(primaryColor, topLeft = Offset(w * 0.38f, h * 0.6f), size = androidx.compose.ui.geometry.Size(w * 0.24f, h * 0.32f), cornerRadius = androidx.compose.ui.geometry.CornerRadius(6f, 6f))
-                }
-                "dumbbell_row", "cable_row" -> {
-                    // Punggung miring & siku menarik ke belakang
-                    drawCircle(secondaryColor, radius = w * 0.12f, center = Offset(w * 0.3f, h * 0.3f))
-                    drawLine(secondaryColor, Offset(w * 0.3f, h * 0.4f), Offset(w * 0.65f, h * 0.6f), strokeWidth = 6f)
-                    // Siku & beban
-                    drawLine(primaryColor, Offset(w * 0.45f, h * 0.5f), Offset(w * 0.55f, h * 0.25f), strokeWidth = 5f)
-                    drawCircle(primaryColor, radius = w * 0.1f, center = Offset(w * 0.55f, h * 0.25f))
-                    // Panah tarikan
-                    drawLine(Color(0xFF38BDF8), Offset(w * 0.55f, h * 0.7f), Offset(w * 0.55f, h * 0.35f), strokeWidth = 4f)
-                }
-                "pushup", "bench_press", "incline_press" -> {
-                    // Bangku datar / lantai
-                    drawLine(Color.Gray, Offset(w * 0.1f, h * 0.75f), Offset(w * 0.9f, h * 0.75f), strokeWidth = 4f)
-                    // Torso datar & dada menonjol
-                    drawRoundRect(primaryColor, topLeft = Offset(w * 0.25f, h * 0.62f), size = androidx.compose.ui.geometry.Size(w * 0.5f, h * 0.12f), cornerRadius = androidx.compose.ui.geometry.CornerRadius(4f, 4f))
-                    // Kepala
-                    drawCircle(secondaryColor, radius = w * 0.1f, center = Offset(w * 0.2f, h * 0.62f))
-                    // Lengan dorong ke atas & dumbbell
-                    drawLine(primaryColor, Offset(w * 0.5f, h * 0.62f), Offset(w * 0.5f, h * 0.25f), strokeWidth = 5f)
-                    drawLine(Color.White, Offset(w * 0.35f, h * 0.22f), Offset(w * 0.65f, h * 0.22f), strokeWidth = 6f)
-                    drawCircle(primaryColor, radius = w * 0.08f, center = Offset(w * 0.35f, h * 0.22f))
-                    drawCircle(primaryColor, radius = w * 0.08f, center = Offset(w * 0.65f, h * 0.22f))
-                }
-                "squat", "lunges", "rdl" -> {
-                    // Kepala
-                    drawCircle(secondaryColor, radius = w * 0.12f, center = Offset(w * 0.5f, h * 0.2f))
-                    // Torso
-                    drawLine(secondaryColor, Offset(w * 0.5f, h * 0.32f), Offset(w * 0.5f, h * 0.52f), strokeWidth = 6f)
-                    // Paha tertekuk 90 derajat & betis
-                    drawLine(primaryColor, Offset(w * 0.5f, h * 0.52f), Offset(w * 0.75f, h * 0.68f), strokeWidth = 6f)
-                    drawLine(primaryColor, Offset(w * 0.75f, h * 0.68f), Offset(w * 0.75f, h * 0.92f), strokeWidth = 6f)
-                    // Panah naik turun
-                    drawLine(Color(0xFF3DDC84), Offset(w * 0.22f, h * 0.35f), Offset(w * 0.22f, h * 0.75f), strokeWidth = 3f)
-                }
-                "shoulder_press", "lateral_raise", "face_pull" -> {
-                    // Kepala & bahu
-                    drawCircle(secondaryColor, radius = w * 0.12f, center = Offset(w * 0.5f, h * 0.28f))
-                    // Kedua lengan merentang ke samping / atas
-                    drawLine(primaryColor, Offset(w * 0.5f, h * 0.42f), Offset(w * 0.15f, h * 0.35f), strokeWidth = 5f)
-                    drawLine(primaryColor, Offset(w * 0.5f, h * 0.42f), Offset(w * 0.85f, h * 0.35f), strokeWidth = 5f)
-                    drawCircle(Color.White, radius = w * 0.09f, center = Offset(w * 0.15f, h * 0.35f))
-                    drawCircle(Color.White, radius = w * 0.09f, center = Offset(w * 0.85f, h * 0.35f))
-                    // Badan
-                    drawLine(secondaryColor, Offset(w * 0.5f, h * 0.42f), Offset(w * 0.5f, h * 0.85f), strokeWidth = 6f)
-                }
-                "bicep_curl", "hammer_curl", "tricep_pushdown" -> {
-                    // Lengan & siku menekuk
-                    drawCircle(secondaryColor, radius = w * 0.12f, center = Offset(w * 0.35f, h * 0.22f))
-                    drawLine(secondaryColor, Offset(w * 0.35f, h * 0.34f), Offset(w * 0.35f, h * 0.8f), strokeWidth = 6f)
-                    // Lengan atas diam
-                    drawLine(primaryColor, Offset(w * 0.35f, h * 0.45f), Offset(w * 0.35f, h * 0.65f), strokeWidth = 6f)
-                    // Lengan bawah menekuk memegang dumbbell
-                    drawLine(primaryColor, Offset(w * 0.35f, h * 0.65f), Offset(w * 0.68f, h * 0.42f), strokeWidth = 5f)
-                    drawCircle(Color(0xFFF59E0B), radius = w * 0.12f, center = Offset(w * 0.68f, h * 0.42f))
-                }
-                else -> {
-                    // Plank / Core
-                    // Garis horizontal tubuh lurus
-                    drawLine(primaryColor, Offset(w * 0.15f, h * 0.55f), Offset(w * 0.85f, h * 0.55f), strokeWidth = 7f)
-                    // Tumpuan siku & kaki
-                    drawLine(secondaryColor, Offset(w * 0.25f, h * 0.55f), Offset(w * 0.25f, h * 0.82f), strokeWidth = 5f)
-                    drawLine(secondaryColor, Offset(w * 0.85f, h * 0.55f), Offset(w * 0.85f, h * 0.82f), strokeWidth = 5f)
-                    // Lantai
-                    drawLine(Color.Gray, Offset(w * 0.1f, h * 0.82f), Offset(w * 0.9f, h * 0.82f), strokeWidth = 3f)
-                }
-            }
-        }
+        Image(
+            painter = painterResource(id = photoRes),
+            contentDescription = null,
+            contentScale = ContentScale.Crop,
+            modifier = Modifier.fillMaxSize()
+        )
     }
 }
 
@@ -596,32 +545,69 @@ private fun ExerciseDetailDialog(
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                // Hero Illustration Box (Gambar Visual Besar)
+                // Hero Photo Banner (Foto Asli Gerakan Latihan)
+                val heroPhotoRes = getExercisePhotoDrawableRes(exercise.illustrationType)
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(140.dp)
-                        .background(
-                            Brush.verticalGradient(
-                                colors = listOf(catColor.copy(alpha = 0.2f), DarkSurfaceElevated)
-                            ),
-                            RoundedCornerShape(16.dp)
-                        ),
-                    contentAlignment = Alignment.Center
+                        .height(180.dp)
+                        .clip(RoundedCornerShape(18.dp))
+                        .border(1.dp, catColor.copy(alpha = 0.5f), RoundedCornerShape(18.dp))
                 ) {
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        MovementVisualThumbnail(
-                            illustrationType = exercise.illustrationType,
-                            accentColor = catColor,
-                            modifier = Modifier.size(90.dp)
-                        )
-                        Spacer(modifier = Modifier.height(6.dp))
-                        Text(
-                            text = "Panduan Visual Gerakan • ${exercise.equipment}",
-                            fontSize = 11.sp,
-                            color = TextGrayLight,
-                            fontWeight = FontWeight.Medium
-                        )
+                    Image(
+                        painter = painterResource(id = heroPhotoRes),
+                        contentDescription = exercise.name,
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier.fillMaxSize()
+                    )
+
+                    // Gradient overlay at bottom
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .background(
+                                Brush.verticalGradient(
+                                    colors = listOf(Color.Transparent, Color.Black.copy(alpha = 0.85f)),
+                                    startY = 80f
+                                )
+                            ),
+                        contentAlignment = Alignment.BottomStart
+                    ) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(12.dp),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.Bottom
+                        ) {
+                            Column {
+                                Text(
+                                    text = "📸 FOTO ASLI GERAKAN",
+                                    fontSize = 10.sp,
+                                    fontWeight = FontWeight.Black,
+                                    color = CoralOrangeLight
+                                )
+                                Text(
+                                    text = "${exercise.name} • ${exercise.equipment}",
+                                    fontSize = 13.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = Color.White
+                                )
+                            }
+
+                            Box(
+                                modifier = Modifier
+                                    .background(catColor.copy(alpha = 0.9f), RoundedCornerShape(8.dp))
+                                    .padding(horizontal = 8.dp, vertical = 4.dp)
+                            ) {
+                                Text(
+                                    text = exercise.category.displayName,
+                                    fontSize = 11.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = Color.White
+                                )
+                            }
+                        }
                     }
                 }
 
