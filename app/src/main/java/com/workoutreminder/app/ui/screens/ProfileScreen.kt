@@ -33,13 +33,17 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddAPhoto
 import androidx.compose.material.icons.filled.AutoAwesome
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.DarkMode
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.FitnessCenter
+import androidx.compose.material.icons.filled.LightMode
 import androidx.compose.material.icons.filled.LocalFireDepartment
 import androidx.compose.material.icons.filled.Opacity
+import androidx.compose.material.icons.filled.Palette
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.School
+import androidx.compose.material.icons.filled.SettingsBrightness
 import androidx.compose.material.icons.filled.TrackChanges
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -167,7 +171,17 @@ fun ProfileScreen(
             )
         }
 
-        // 5. Kartu Generator Kata Motivasi Fitness
+        // 5. Pengaturan Tema Tampilan Aplikasi (Dark, Light, System)
+        item {
+            ThemeSelectorCard(
+                currentTheme = profile.themeMode,
+                onThemeSelected = { newMode ->
+                    viewModel.setThemeMode(newMode)
+                }
+            )
+        }
+
+        // 6. Kartu Generator Kata Motivasi Fitness
         item {
             Card(
                 modifier = Modifier.fillMaxWidth(),
@@ -1245,9 +1259,110 @@ private fun EditProfileDialog(
                     Text(
                         text = "Simpan Perubahan Profil",
                         fontWeight = FontWeight.Bold,
-                        color = TextWhite,
+                        color = Color.White,
                         fontSize = 15.sp
                     )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun ThemeSelectorCard(
+    currentTheme: String,
+    onThemeSelected: (String) -> Unit
+) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(18.dp),
+        colors = CardDefaults.cardColors(containerColor = DarkSurfaceCard),
+        border = BorderStroke(1.dp, DarkBorder)
+    ) {
+        Column(modifier = Modifier.padding(18.dp)) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Box(
+                    modifier = Modifier
+                        .size(36.dp)
+                        .background(CoralOrangeMuted, CircleShape),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Palette,
+                        contentDescription = null,
+                        tint = CoralOrange,
+                        modifier = Modifier.size(20.dp)
+                    )
+                }
+                Spacer(modifier = Modifier.width(12.dp))
+                Column {
+                    Text(
+                        text = "Tema Tampilan Aplikasi",
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold,
+                        color = TextWhite
+                    )
+                    Text(
+                        text = when (currentTheme) {
+                            "DARK" -> "Mode Gelap (nyaman di mata & hemat baterai)"
+                            "LIGHT" -> "Mode Terang (kontras jernih & bersih)"
+                            else -> "Otomatis mengikuti tema sistem HP"
+                        },
+                        style = MaterialTheme.typography.bodySmall,
+                        color = TextGrayMuted,
+                        fontSize = 12.sp
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(14.dp))
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                val themeOptions = listOf(
+                    Triple("SYSTEM", "Sistem", Icons.Default.SettingsBrightness),
+                    Triple("DARK", "Gelap", Icons.Default.DarkMode),
+                    Triple("LIGHT", "Terang", Icons.Default.LightMode)
+                )
+
+                themeOptions.forEach { (mode, label, icon) ->
+                    val isSelected = currentTheme == mode
+                    Surface(
+                        modifier = Modifier
+                            .weight(1f)
+                            .clip(RoundedCornerShape(12.dp))
+                            .clickable { onThemeSelected(mode) },
+                        shape = RoundedCornerShape(12.dp),
+                        color = if (isSelected) CoralOrange else DarkSurfaceElevated,
+                        border = BorderStroke(
+                            1.dp,
+                            if (isSelected) CoralOrange else DarkBorder
+                        )
+                    ) {
+                        Column(
+                            modifier = Modifier.padding(vertical = 12.dp, horizontal = 4.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.Center
+                        ) {
+                            Icon(
+                                imageVector = icon,
+                                contentDescription = label,
+                                tint = if (isSelected) Color.White else TextGrayLight,
+                                modifier = Modifier.size(22.dp)
+                            )
+                            Spacer(modifier = Modifier.height(6.dp))
+                            Text(
+                                text = label,
+                                fontSize = 12.sp,
+                                fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
+                                color = if (isSelected) Color.White else TextGrayLight
+                            )
+                        }
+                    }
                 }
             }
         }

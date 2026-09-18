@@ -81,8 +81,18 @@ class AlarmActivity : ComponentActivity() {
         val splitName = intent.getStringExtra("split_name") ?: "Latihan Harian"
         val soundName = intent.getStringExtra("sound_name") ?: "Energetic Gym Beat"
 
+        val themeMode = getSharedPreferences("workout_user_profile", Context.MODE_PRIVATE)
+            .getString("key_theme_mode", "SYSTEM") ?: "SYSTEM"
+
         setContent {
-            WorkoutReminderTheme {
+            val isSystemDark = androidx.compose.foundation.isSystemInDarkTheme()
+            val isDark = when (themeMode) {
+                "LIGHT" -> false
+                "DARK" -> true
+                else -> isSystemDark
+            }
+
+            WorkoutReminderTheme(darkTheme = isDark) {
                 AlarmScreenContent(
                     splitName = splitName,
                     soundName = soundName,

@@ -29,6 +29,7 @@ class UserProfileManager(context: Context) {
         private const val KEY_WEIGHT = "key_weight"
         private const val KEY_TARGET_WORKOUTS = "key_target_workouts"
         private const val KEY_FITNESS_GOAL = "key_fitness_goal"
+        private const val KEY_THEME_MODE = "key_theme_mode"
     }
 
     private fun loadProfile(): UserProfile {
@@ -47,7 +48,8 @@ class UserProfileManager(context: Context) {
             weightKg = prefs.getFloat(KEY_WEIGHT, 68.0f),
             targetWorkoutsPerWeek = prefs.getInt(KEY_TARGET_WORKOUTS, 4),
             fitnessGoal = prefs.getString(KEY_FITNESS_GOAL, "Bulking / Tambah Otot")
-                ?: "Bulking / Tambah Otot"
+                ?: "Bulking / Tambah Otot",
+            themeMode = prefs.getString(KEY_THEME_MODE, "SYSTEM") ?: "SYSTEM"
         )
     }
 
@@ -65,8 +67,14 @@ class UserProfileManager(context: Context) {
             putFloat(KEY_WEIGHT, profile.weightKg)
             putInt(KEY_TARGET_WORKOUTS, profile.targetWorkoutsPerWeek)
             putString(KEY_FITNESS_GOAL, profile.fitnessGoal)
+            putString(KEY_THEME_MODE, profile.themeMode)
             apply()
         }
         _userProfile.value = profile
+    }
+
+    fun saveThemeMode(themeMode: String) {
+        prefs.edit().putString(KEY_THEME_MODE, themeMode).apply()
+        _userProfile.value = _userProfile.value.copy(themeMode = themeMode)
     }
 }

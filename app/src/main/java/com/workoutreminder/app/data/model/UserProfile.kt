@@ -15,7 +15,8 @@ data class UserProfile(
     val heightCm: Float = 172.0f,
     val weightKg: Float = 68.0f,
     val targetWorkoutsPerWeek: Int = 4,
-    val fitnessGoal: String = "Bulking / Tambah Otot"
+    val fitnessGoal: String = "Bulking / Tambah Otot",
+    val themeMode: String = "SYSTEM" // "SYSTEM", "LIGHT", "DARK"
 ) {
     val bmi: Float
         get() {

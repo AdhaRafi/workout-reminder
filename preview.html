@@ -1102,16 +1102,56 @@
       transform: translateX(-50%) translateY(0);
       opacity: 1;
     }
+
+    /* LIGHT MODE STYLES FOR SIMULATOR */
+    .phone-container.light-mode {
+      --bg: #F6F7F9;
+      --surface: #FFFFFF;
+      --elevated: #F1F3F5;
+      --border: #E2E8F0;
+      --text: #0F172A;
+      --text-gray: #334155;
+      --text-muted: #64748B;
+      color: #0F172A;
+    }
+    .phone-container.light-mode .card {
+      background: #FFFFFF !important;
+      border-color: #E2E8F0 !important;
+    }
+    .phone-container.light-mode .app-header,
+    .phone-container.light-mode .bottom-nav,
+    .phone-container.light-mode .modal-sheet {
+      background: #FFFFFF !important;
+      border-color: #E2E8F0 !important;
+    }
+    .phone-container.light-mode .header-title,
+    .phone-container.light-mode .modal-title,
+    .phone-container.light-mode .card-title span {
+      color: #0F172A !important;
+    }
+    .phone-container.light-mode .screen-content {
+      background: #F6F7F9 !important;
+    }
+    .phone-container.light-mode input,
+    .phone-container.light-mode select {
+      background: #F1F3F5 !important;
+      border-color: #E2E8F0 !important;
+      color: #0F172A !important;
+    }
   </style>
 </head>
 
 <body>
 
   <div class="top-instruction">
-    <div class="badge-pill-top">🔥 VERSI TERBARU • SUARA & NAMA KUSTOM</div>
+    <div class="badge-pill-top">🔥 VERSI TERBARU • LOGO SKULL & DARK / LIGHT THEME</div>
     <h1>📱 Simulator Workout Reminder</h1>
-    <p>Ganti nama & profil pengguna, pilih musik/lagu alarm favorit, dan uji dering alarm layar penuh langsung di
-      browser!</p>
+    <p>Pilih tema tampilan (Gelap / Terang / Sistem), kelola pengingat, dan nikmati logo baru Skull Barbell!</p>
+    <div style="display: flex; justify-content: center; gap: 8px; margin-top: 12px;">
+      <button onclick="setPreviewTheme('dark')" id="themeBtnDark" style="background: #1C1C1E; border: 1.5px solid var(--coral); color: #fff; padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: 700; cursor: pointer;">🌙 Gelap</button>
+      <button onclick="setPreviewTheme('light')" id="themeBtnLight" style="background: #262628; border: 1px solid #333336; color: #8E8E93; padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: 700; cursor: pointer;">☀️ Terang</button>
+      <button onclick="setPreviewTheme('system')" id="themeBtnSystem" style="background: #262628; border: 1px solid #333336; color: #8E8E93; padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: 700; cursor: pointer;">⚙️ Sistem</button>
+    </div>
   </div>
 
   <div class="phone-container">
@@ -1121,7 +1161,9 @@
     <!-- App Header -->
     <div class="app-header">
       <div class="header-left">
-        <div class="header-icon" id="headerIcon">🦁</div>
+        <div class="header-icon" id="headerIcon" style="background: #050505; border: 1.5px solid rgba(255,90,60,0.4); padding: 2px; overflow: hidden;">
+          <img src="app_logo.png" alt="Skull Logo" style="width: 100%; height: 100%; object-fit: contain; border-radius: 50%;" />
+        </div>
         <div>
           <div class="header-title" id="headerTitle">Halo, Sobat Bugar!</div>
           <div class="header-subtitle" id="headerSubtitle">Jadwal & Pengingat Latihan</div>
@@ -3042,6 +3084,44 @@
     function snoozeAlarm() {
       closeAlarmModal();
       showToast('Alarm ditunda 5 menit ⏰');
+    }
+
+    function setPreviewTheme(mode) {
+      const phone = document.querySelector('.phone-container');
+      const btnDark = document.getElementById('themeBtnDark');
+      const btnLight = document.getElementById('themeBtnLight');
+      const btnSystem = document.getElementById('themeBtnSystem');
+
+      if (!phone || !btnDark) return;
+
+      [btnDark, btnLight, btnSystem].forEach(b => {
+        if (b) {
+          b.style.borderColor = '#333336';
+          b.style.color = '#8E8E93';
+          b.style.background = '#262628';
+        }
+      });
+
+      if (mode === 'light') {
+        phone.classList.add('light-mode');
+        btnLight.style.borderColor = 'var(--coral)';
+        btnLight.style.color = '#fff';
+        btnLight.style.background = '#1C1C1E';
+        showToast('Mode Terang diaktifkan! ☀️');
+      } else if (mode === 'dark') {
+        phone.classList.remove('light-mode');
+        btnDark.style.borderColor = 'var(--coral)';
+        btnDark.style.color = '#fff';
+        btnDark.style.background = '#1C1C1E';
+        showToast('Mode Gelap diaktifkan! 🌙');
+      } else {
+        const isDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+        phone.classList.toggle('light-mode', !isDark);
+        btnSystem.style.borderColor = 'var(--coral)';
+        btnSystem.style.color = '#fff';
+        btnSystem.style.background = '#1C1C1E';
+        showToast('Mengikuti tema sistem! ⚙️');
+      }
     }
 
     // Initialize all components on load

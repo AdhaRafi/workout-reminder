@@ -14,6 +14,8 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
+import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -46,7 +48,15 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         setContent {
-            WorkoutReminderTheme {
+            val userProfile by viewModel.userProfile.collectAsState()
+            val isSystemDark = isSystemInDarkTheme()
+            val isDark = when (userProfile.themeMode) {
+                "LIGHT" -> false
+                "DARK" -> true
+                else -> isSystemDark
+            }
+
+            WorkoutReminderTheme(darkTheme = isDark) {
                 val lifecycleOwner = LocalLifecycleOwner.current
 
                 var hasNotificationPermission by remember {

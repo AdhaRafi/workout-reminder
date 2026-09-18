@@ -1,6 +1,7 @@
 package com.workoutreminder.app.ui.theme
 
 import androidx.compose.material3.Typography
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
@@ -13,7 +14,7 @@ val Typography = Typography(
         fontSize = 36.sp,
         lineHeight = 44.sp,
         letterSpacing = (-0.5).sp,
-        color = TextWhite
+        color = Color.Unspecified
     ),
     headlineLarge = TextStyle(
         fontFamily = FontFamily.SansSerif,
@@ -21,7 +22,7 @@ val Typography = Typography(
         fontSize = 28.sp,
         lineHeight = 34.sp,
         letterSpacing = 0.sp,
-        color = TextWhite
+        color = Color.Unspecified
     ),
     headlineMedium = TextStyle(
         fontFamily = FontFamily.SansSerif,
@@ -29,7 +30,7 @@ val Typography = Typography(
         fontSize = 22.sp,
         lineHeight = 28.sp,
         letterSpacing = 0.sp,
-        color = TextWhite
+        color = Color.Unspecified
     ),
     titleLarge = TextStyle(
         fontFamily = FontFamily.SansSerif,
@@ -37,7 +38,7 @@ val Typography = Typography(
         fontSize = 18.sp,
         lineHeight = 24.sp,
         letterSpacing = 0.sp,
-        color = TextWhite
+        color = Color.Unspecified
     ),
     titleMedium = TextStyle(
         fontFamily = FontFamily.SansSerif,
@@ -45,7 +46,7 @@ val Typography = Typography(
         fontSize = 16.sp,
         lineHeight = 22.sp,
         letterSpacing = 0.15.sp,
-        color = TextWhite
+        color = Color.Unspecified
     ),
     bodyLarge = TextStyle(
         fontFamily = FontFamily.SansSerif,
@@ -53,7 +54,7 @@ val Typography = Typography(
         fontSize = 15.sp,
         lineHeight = 22.sp,
         letterSpacing = 0.5.sp,
-        color = TextGrayLight
+        color = Color.Unspecified
     ),
     bodyMedium = TextStyle(
         fontFamily = FontFamily.SansSerif,
@@ -61,7 +62,7 @@ val Typography = Typography(
         fontSize = 13.sp,
         lineHeight = 18.sp,
         letterSpacing = 0.25.sp,
-        color = TextGrayLight
+        color = Color.Unspecified
     ),
     labelLarge = TextStyle(
         fontFamily = FontFamily.SansSerif,
@@ -69,7 +70,7 @@ val Typography = Typography(
         fontSize = 14.sp,
         lineHeight = 20.sp,
         letterSpacing = 0.5.sp,
-        color = TextWhite
+        color = Color.Unspecified
     ),
     labelMedium = TextStyle(
         fontFamily = FontFamily.SansSerif,
@@ -77,6 +78,6 @@ val Typography = Typography(
         fontSize = 12.sp,
         lineHeight = 16.sp,
         letterSpacing = 0.5.sp,
-        color = TextGrayMuted
+        color = Color.Unspecified
     )
 )

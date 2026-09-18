@@ -161,4 +161,8 @@ class WorkoutViewModel(
     fun saveUserProfile(profile: UserProfile) {
         userProfileManager.saveProfile(profile)
     }
+
+    fun setThemeMode(themeMode: String) {
+        userProfileManager.saveThemeMode(themeMode)
+    }
 }
