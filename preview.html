@@ -1,0 +1,3055 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Workout Reminder - Simulator & Preview Interaktif</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap"
+    rel="stylesheet">
+  <style>
+    :root {
+      --bg: #121212;
+      --surface: #1C1C1E;
+      --elevated: #262628;
+      --border: #333336;
+      --coral: #FF5A3C;
+      --coral-light: #FF7E67;
+      --coral-muted: rgba(255, 90, 60, 0.15);
+      --green: #3DDC84;
+      --green-muted: rgba(61, 220, 132, 0.15);
+      --purple: #A855F7;
+      --purple-muted: rgba(168, 85, 247, 0.15);
+      --text: #FFFFFF;
+      --text-gray: #E2E2E6;
+      --text-muted: #8E8E93;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background: #090a0f;
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 24px 16px;
+    }
+
+    .top-instruction {
+      margin-bottom: 18px;
+      text-align: center;
+      max-width: 520px;
+    }
+
+    .top-instruction h1 {
+      font-size: 22px;
+      font-weight: 900;
+      color: #fff;
+      letter-spacing: -0.5px;
+      margin-bottom: 6px;
+    }
+
+    .top-instruction p {
+      font-size: 13px;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    .badge-pill-top {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(255, 90, 60, 0.15);
+      border: 1px solid rgba(255, 90, 60, 0.4);
+      color: var(--coral-light);
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    /* Phone Frame */
+    .phone-container {
+      width: 100%;
+      max-width: 410px;
+      height: 840px;
+      background: var(--bg);
+      border-radius: 46px;
+      border: 8px solid #28282c;
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.85), 0 0 50px rgba(255, 90, 60, 0.18);
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Notch */
+    .notch {
+      width: 130px;
+      height: 22px;
+      background: #28282c;
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      border-bottom-left-radius: 14px;
+      border-bottom-right-radius: 14px;
+      z-index: 100;
+    }
+
+    /* App Header */
+    .app-header {
+      padding: 32px 18px 12px;
+      background: var(--bg);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .header-icon {
+      width: 40px;
+      height: 40px;
+      background: linear-gradient(135deg, var(--coral), #ff8a65);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      box-shadow: 0 4px 12px rgba(255, 90, 60, 0.35);
+    }
+
+    .header-title {
+      font-size: 16px;
+      font-weight: 800;
+      color: #fff;
+    }
+
+    .header-subtitle {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .test-alarm-btn {
+      background: linear-gradient(135deg, rgba(255, 90, 60, 0.25), rgba(255, 90, 60, 0.1));
+      border: 1px solid var(--coral);
+      color: var(--coral-light);
+      padding: 6px 12px;
+      border-radius: 12px;
+      font-size: 11px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      transition: all 0.2s;
+    }
+
+    .test-alarm-btn:hover {
+      background: var(--coral);
+      color: #fff;
+      transform: translateY(-1px);
+    }
+
+    /* Content Area */
+    .screen-content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .screen-content::-webkit-scrollbar {
+      width: 4px;
+    }
+
+    .screen-content::-webkit-scrollbar-thumb {
+      background: var(--border);
+      border-radius: 4px;
+    }
+
+    /* Cards */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 16px;
+    }
+
+    .card-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+    }
+
+    /* Jadwal Tab Items */
+    .reminder-item {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 14px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      transition: border-color 0.2s, transform 0.15s;
+    }
+
+    .reminder-item:hover {
+      border-color: rgba(255, 90, 60, 0.4);
+    }
+
+    .reminder-time {
+      font-size: 24px;
+      font-weight: 900;
+      color: #fff;
+      letter-spacing: -0.5px;
+    }
+
+    .reminder-split {
+      font-size: 13px;
+      color: var(--coral-light);
+      font-weight: 700;
+      margin-top: 1px;
+    }
+
+    .reminder-meta {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 3px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .music-badge {
+      background: rgba(168, 85, 247, 0.15);
+      border: 1px solid rgba(168, 85, 247, 0.35);
+      color: #c084fc;
+      padding: 2px 7px;
+      border-radius: 6px;
+      font-size: 10px;
+      font-weight: 700;
+    }
+
+    .action-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-done {
+      background: var(--green-muted);
+      border: 1px solid var(--green);
+      color: var(--green);
+      border-radius: 10px;
+      padding: 6px 10px;
+      font-size: 11px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-done:hover {
+      background: var(--green);
+      color: #000;
+    }
+
+    .toggle-switch {
+      width: 44px;
+      height: 24px;
+      background: var(--green);
+      border-radius: 12px;
+      position: relative;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .toggle-switch.off {
+      background: #444;
+    }
+
+    .toggle-knob {
+      width: 18px;
+      height: 18px;
+      background: #fff;
+      border-radius: 50%;
+      position: absolute;
+      top: 3px;
+      right: 3px;
+      transition: transform 0.2s;
+    }
+
+    .toggle-switch.off .toggle-knob {
+      transform: translateX(-20px);
+    }
+
+    /* FAB */
+    .fab {
+      position: absolute;
+      bottom: 84px;
+      right: 20px;
+      width: 54px;
+      height: 54px;
+      background: linear-gradient(135deg, var(--coral), #ff7e67);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 26px;
+      color: #fff;
+      box-shadow: 0 8px 20px rgba(255, 90, 60, 0.45);
+      cursor: pointer;
+      border: none;
+      z-index: 50;
+      transition: transform 0.2s;
+    }
+
+    .fab:hover {
+      transform: scale(1.08);
+    }
+
+    /* Gamifikasi Tab */
+    .streak-banner {
+      background: linear-gradient(135deg, #35150a 0%, var(--surface) 100%);
+      border: 1px solid var(--coral);
+      border-radius: 20px;
+      padding: 16px;
+    }
+
+    .streak-badge {
+      font-size: 26px;
+      font-weight: 900;
+      color: var(--coral);
+      margin: 4px 0;
+    }
+
+    .level-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 16px;
+    }
+
+    .progress-bar-bg {
+      width: 100%;
+      height: 8px;
+      background: var(--elevated);
+      border-radius: 4px;
+      overflow: hidden;
+      margin: 10px 0 6px;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--coral), var(--green));
+      width: 70%;
+      border-radius: 4px;
+      transition: width 0.4s ease;
+    }
+
+    .btn-quick-log {
+      width: 100%;
+      height: 48px;
+      background: linear-gradient(135deg, var(--coral), #ff7e67);
+      border: none;
+      border-radius: 14px;
+      color: #fff;
+      font-weight: 700;
+      font-size: 14px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      box-shadow: 0 4px 14px rgba(255, 90, 60, 0.35);
+      transition: transform 0.1s;
+    }
+
+    .btn-quick-log:active {
+      transform: scale(0.98);
+    }
+
+    /* Badges */
+    .badges-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .badge-box {
+      background: var(--elevated);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 12px;
+      text-align: center;
+    }
+
+    .badge-box.unlocked {
+      border-color: rgba(255, 90, 60, 0.4);
+      background: rgba(255, 90, 60, 0.08);
+    }
+
+    .badge-icon {
+      font-size: 26px;
+      margin-bottom: 4px;
+    }
+
+    .badge-name {
+      font-size: 12px;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    .badge-status {
+      font-size: 10px;
+      color: var(--green);
+      margin-top: 2px;
+    }
+
+    /* Profil Tab */
+    .profile-card {
+      background: linear-gradient(135deg, #1f1f24 0%, var(--surface) 100%);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 16px;
+    }
+
+    .profile-header-box {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .profile-user-info {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .avatar-large {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--coral), #ff8a65);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 32px;
+      box-shadow: 0 4px 14px rgba(255, 90, 60, 0.4);
+      border: 2px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .btn-edit-profile {
+      background: rgba(255, 90, 60, 0.15);
+      border: 1px solid var(--coral);
+      color: var(--coral-light);
+      padding: 6px 12px;
+      border-radius: 10px;
+      font-size: 11px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      transition: all 0.2s;
+    }
+
+    .btn-edit-profile:hover {
+      background: var(--coral);
+      color: #fff;
+    }
+
+    .bmi-number {
+      font-size: 34px;
+      font-weight: 900;
+      color: var(--green);
+    }
+
+    .bmi-pill {
+      background: var(--green-muted);
+      color: var(--green);
+      font-size: 11px;
+      font-weight: 800;
+      padding: 4px 8px;
+      border-radius: 8px;
+      display: inline-block;
+    }
+
+    .slider-row {
+      margin-top: 10px;
+    }
+
+    .slider-label {
+      font-size: 12px;
+      color: var(--text-muted);
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 4px;
+    }
+
+    input[type=range] {
+      width: 100%;
+      accent-color: var(--coral);
+    }
+
+    .two-cols {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .metric-mini {
+      background: var(--elevated);
+      border-radius: 12px;
+      padding: 12px;
+    }
+
+    /* Sub-Tab Nav (Katalog vs Tutorial) */
+    .subtab-nav {
+      display: flex;
+      background: var(--elevated);
+      border-radius: 14px;
+      padding: 4px;
+      margin-bottom: 12px;
+      border: 1px solid var(--border);
+    }
+
+    .subtab-btn {
+      flex: 1;
+      padding: 8px 12px;
+      border: none;
+      background: transparent;
+      color: var(--text-muted);
+      font-size: 12px;
+      font-weight: 700;
+      border-radius: 10px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: all 0.2s;
+    }
+
+    .subtab-btn.active {
+      background: var(--coral);
+      color: #fff;
+      box-shadow: 0 2px 8px rgba(255, 90, 60, 0.4);
+    }
+
+    /* Category Filter Pills */
+    .filter-pills-row {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding-bottom: 8px;
+      margin-bottom: 10px;
+      scrollbar-width: none;
+    }
+
+    .filter-pills-row::-webkit-scrollbar {
+      display: none;
+    }
+
+    .filter-pill {
+      background: var(--elevated);
+      border: 1px solid var(--border);
+      color: var(--text-gray);
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 700;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .filter-pill.active {
+      background: var(--coral);
+      color: #fff;
+      border-color: var(--coral);
+    }
+
+    /* Exercise Card Item */
+    .exercise-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 14px;
+      display: flex;
+      gap: 12px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .exercise-card:hover {
+      border-color: rgba(255, 90, 60, 0.5);
+      transform: translateY(-1px);
+    }
+
+    .exercise-thumb {
+      width: 70px;
+      height: 70px;
+      border-radius: 14px;
+      background: var(--elevated);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      overflow: hidden;
+    }
+
+    .exercise-thumb svg {
+      width: 58px;
+      height: 58px;
+    }
+
+    .exercise-meta-box {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .exercise-badges-row {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 4px;
+    }
+
+    .badge-tag {
+      font-size: 9px;
+      font-weight: 800;
+      padding: 2px 6px;
+      border-radius: 6px;
+      text-transform: uppercase;
+    }
+
+    .exercise-title {
+      font-size: 14px;
+      font-weight: 800;
+      color: #fff;
+      margin-bottom: 2px;
+    }
+
+    .exercise-target {
+      font-size: 11px;
+      color: var(--coral-light);
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .exercise-footer-line {
+      font-size: 10px;
+      color: var(--text-muted);
+      display: flex;
+      justify-content: space-between;
+    }
+
+    /* Lesson Card Item */
+    .lesson-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .lesson-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .lesson-num {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: var(--coral-muted);
+      color: var(--coral-light);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 900;
+      font-size: 13px;
+    }
+
+    .lesson-points {
+      background: var(--elevated);
+      border-radius: 10px;
+      padding: 10px 12px;
+      font-size: 11px;
+      color: var(--text-gray);
+      line-height: 1.5;
+    }
+
+    .lesson-rule {
+      background: var(--green-muted);
+      border-radius: 8px;
+      padding: 6px 10px;
+      font-size: 11px;
+      color: var(--green);
+      font-weight: 700;
+    }
+
+    /* Bottom Nav Bar */
+    .bottom-nav {
+      height: 70px;
+      background: var(--elevated);
+      display: flex;
+      align-items: center;
+      justify-content: space-around;
+      border-top: 1px solid var(--border);
+      z-index: 40;
+    }
+
+    .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-size: 11px;
+      font-weight: 600;
+      transition: all 0.2s;
+      width: 70px;
+      padding: 6px 0;
+      border-radius: 12px;
+    }
+
+    .nav-item.active {
+      color: var(--coral);
+    }
+
+    .nav-item.active .nav-icon-box {
+      background: var(--coral);
+      color: #fff;
+    }
+
+    .nav-icon-box {
+      width: 34px;
+      height: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 12px;
+      font-size: 14px;
+      transition: all 0.2s;
+    }
+
+    /* MODAL POPUPS (Edit Profile & Add Reminder) */
+    .modal-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.8);
+      backdrop-filter: blur(6px);
+      z-index: 150;
+      padding: 16px;
+      display: none;
+      align-items: flex-end;
+      animation: fadeIn 0.2s ease;
+    }
+
+    .modal-sheet {
+      width: 100%;
+      max-height: 90%;
+      overflow-y: auto;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 24px 24px 18px 18px;
+      padding: 20px 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.6);
+      animation: slideUp 0.25s ease;
+    }
+
+    @keyframes slideUp {
+      from {
+        transform: translateY(100%);
+      }
+
+      to {
+        transform: translateY(0);
+      }
+    }
+
+    .modal-title {
+      font-size: 16px;
+      font-weight: 800;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .modal-close {
+      background: var(--elevated);
+      border: none;
+      color: var(--text-muted);
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      cursor: pointer;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal-close:hover {
+      color: #fff;
+      background: #444;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .form-label {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text-gray);
+    }
+
+    .form-input {
+      background: var(--elevated);
+      border: 1px solid var(--border);
+      color: #fff;
+      padding: 10px 14px;
+      border-radius: 12px;
+      font-size: 14px;
+      font-weight: 600;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .form-input:focus {
+      border-color: var(--coral);
+    }
+
+    .chips-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .chip-item {
+      background: var(--elevated);
+      border: 1px solid var(--border);
+      color: var(--text-gray);
+      padding: 6px 12px;
+      border-radius: 10px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .chip-item.active {
+      background: var(--coral-muted);
+      border-color: var(--coral);
+      color: var(--coral-light);
+      font-weight: 700;
+    }
+
+    .chip-music {
+      background: var(--elevated);
+      border: 1px solid var(--border);
+      color: var(--text-gray);
+      padding: 7px 11px;
+      border-radius: 10px;
+      font-size: 11px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.15s;
+    }
+
+    .chip-music.active {
+      background: var(--purple-muted);
+      border-color: var(--purple);
+      color: #d8b4fe;
+      font-weight: 700;
+    }
+
+    .btn-save {
+      background: linear-gradient(135deg, var(--coral), #ff7e67);
+      border: none;
+      border-radius: 14px;
+      padding: 12px;
+      color: #fff;
+      font-weight: 800;
+      font-size: 14px;
+      cursor: pointer;
+      box-shadow: 0 4px 14px rgba(255, 90, 60, 0.4);
+      margin-top: 6px;
+    }
+
+    /* FULL-SCREEN ALARM MODAL */
+    .alarm-modal {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: radial-gradient(circle at center, #2C130D 0%, #121212 75%);
+      z-index: 200;
+      padding: 40px 24px 30px;
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .alarm-modal.active {
+      display: flex;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: scale(0.97);
+      }
+
+      to {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+
+    @keyframes pulse {
+      0% {
+        transform: scale(1);
+        box-shadow: 0 0 20px rgba(255, 90, 60, 0.4);
+      }
+
+      50% {
+        transform: scale(1.15);
+        box-shadow: 0 0 50px rgba(255, 90, 60, 0.85);
+      }
+
+      100% {
+        transform: scale(1);
+        box-shadow: 0 0 20px rgba(255, 90, 60, 0.4);
+      }
+    }
+
+    .alarm-icon-pulse {
+      width: 100px;
+      height: 100px;
+      background: linear-gradient(135deg, var(--coral), #ff8a65);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 48px;
+      animation: pulse 1.3s infinite ease-in-out;
+      margin: 14px auto;
+    }
+
+    /* Audio Visualizer Waves */
+    .audio-visualizer {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      height: 32px;
+      margin: 10px 0;
+    }
+
+    .wave-bar {
+      width: 5px;
+      height: 12px;
+      background: var(--purple);
+      border-radius: 4px;
+      animation: waveAnim 0.8s infinite ease-in-out alternate;
+    }
+
+    .wave-bar:nth-child(2) {
+      animation-delay: 0.15s;
+      height: 20px;
+      background: var(--coral);
+    }
+
+    .wave-bar:nth-child(3) {
+      animation-delay: 0.3s;
+      height: 28px;
+      background: #fff;
+    }
+
+    .wave-bar:nth-child(4) {
+      animation-delay: 0.45s;
+      height: 24px;
+      background: var(--coral);
+    }
+
+    .wave-bar:nth-child(5) {
+      animation-delay: 0.6s;
+      height: 14px;
+      background: var(--purple);
+    }
+
+    @keyframes waveAnim {
+      0% {
+        transform: scaleY(0.4);
+      }
+
+      100% {
+        transform: scaleY(1.3);
+      }
+    }
+
+    .alarm-music-pill {
+      background: rgba(168, 85, 247, 0.2);
+      border: 1px solid var(--purple);
+      color: #e9d5ff;
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 4px;
+    }
+
+    .alarm-btn-stack {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .alarm-btn {
+      width: 100%;
+      height: 50px;
+      border-radius: 14px;
+      font-weight: 800;
+      font-size: 14px;
+      cursor: pointer;
+      border: none;
+      transition: transform 0.1s;
+    }
+
+    .alarm-btn:active {
+      transform: scale(0.98);
+    }
+
+    /* Toast */
+    .toast {
+      position: absolute;
+      top: 40px;
+      left: 50%;
+      transform: translateX(-50%) translateY(-20px);
+      background: var(--elevated);
+      border: 1px solid var(--green);
+      color: #fff;
+      padding: 10px 18px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 700;
+      opacity: 0;
+      pointer-events: none;
+      transition: all 0.3s;
+      z-index: 300;
+      white-space: nowrap;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.7);
+    }
+
+    .toast.show {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="top-instruction">
+    <div class="badge-pill-top">🔥 VERSI TERBARU • SUARA & NAMA KUSTOM</div>
+    <h1>📱 Simulator Workout Reminder</h1>
+    <p>Ganti nama & profil pengguna, pilih musik/lagu alarm favorit, dan uji dering alarm layar penuh langsung di
+      browser!</p>
+  </div>
+
+  <div class="phone-container">
+    <div class="notch"></div>
+    <div id="toast" class="toast">Profil berhasil diperbarui! 🎉</div>
+
+    <!-- App Header -->
+    <div class="app-header">
+      <div class="header-left">
+        <div class="header-icon" id="headerIcon">🦁</div>
+        <div>
+          <div class="header-title" id="headerTitle">Halo, Sobat Bugar!</div>
+          <div class="header-subtitle" id="headerSubtitle">Jadwal & Pengingat Latihan</div>
+        </div>
+      </div>
+      <button class="test-alarm-btn" onclick="openAlarmModal()">
+        🔔 Tes Alarm
+      </button>
+    </div>
+
+    <!-- Screen Content: TAB 0 (JADWAL) -->
+    <div id="tabJadwal" class="screen-content">
+      <!-- Weekly Banner -->
+      <div class="card"
+        style="background: linear-gradient(135deg, #18281f 0%, var(--surface) 100%); border-color: rgba(61,220,132,0.3);">
+        <div class="card-title" style="margin-bottom: 4px;">
+          <span>Selesai Minggu Ini</span>
+          <span style="color: var(--green); font-weight: 800;" id="weekDoneCount">3x Sesi</span>
+        </div>
+        <p style="font-size: 11px; color: var(--text-muted);" id="weekTargetText">Target mingguan: 4x sesi. Tinggal 1
+          sesi lagi!</p>
+      </div>
+
+      <!-- Reminder List Header -->
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 2px;">
+        <span style="font-size: 12px; font-weight: 700; color: var(--text-muted); letter-spacing: 0.5px;">DAFTAR
+          PENGINGAT ALARM</span>
+        <span style="font-size: 11px; color: var(--coral); cursor: pointer; font-weight: 700;"
+          onclick="openAddReminderModal()">+ Tambah</span>
+      </div>
+
+      <!-- Schedule Items -->
+      <div id="reminderListContainer" style="display: flex; flex-direction: column; gap: 10px;">
+        <!-- Item 1 -->
+        <div class="reminder-item">
+          <div>
+            <div class="reminder-time">07:00</div>
+            <div class="reminder-split">Dada & Trisep</div>
+            <div class="reminder-meta">
+              <span>Senin, Kamis</span>
+              <span class="music-badge">🎵 Energetic Gym Beat</span>
+            </div>
+          </div>
+          <div class="action-row">
+            <button class="btn-done" onclick="finishWorkout('Dada & Trisep')">✓ Selesai</button>
+            <div class="toggle-switch" onclick="toggleSwitch(this)">
+              <div class="toggle-knob"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Item 2 -->
+        <div class="reminder-item">
+          <div>
+            <div class="reminder-time">16:30</div>
+            <div class="reminder-split">Punggung & Bisep</div>
+            <div class="reminder-meta">
+              <span>Selasa, Jumat</span>
+              <span class="music-badge">🎸 Hard Rock Workout</span>
+            </div>
+          </div>
+          <div class="action-row">
+            <button class="btn-done" onclick="finishWorkout('Punggung & Bisep')">✓ Selesai</button>
+            <div class="toggle-switch" onclick="toggleSwitch(this)">
+              <div class="toggle-knob"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Item 3 -->
+        <div class="reminder-item">
+          <div>
+            <div class="reminder-time">06:45</div>
+            <div class="reminder-split">Kaki & Perut (Legs)</div>
+            <div class="reminder-meta">
+              <span>Rabu, Sabtu</span>
+              <span class="music-badge">🎧 Electronic Bass Drop</span>
+            </div>
+          </div>
+          <div class="action-row">
+            <button class="btn-done" onclick="finishWorkout('Kaki & Perut')">✓ Selesai</button>
+            <div class="toggle-switch" onclick="toggleSwitch(this)">
+              <div class="toggle-knob"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Screen Content: TAB 1 (PANDUAN LATIHAN & TUTORIAL) -->
+    <div id="tabPanduan" class="screen-content" style="display: none;">
+      <!-- Sub-Tab Switcher -->
+      <div class="subtab-nav">
+        <button class="subtab-btn active" id="subtabBtnExercises" onclick="switchSubTab(0)">
+          🏋️ Katalog Gerakan
+        </button>
+        <button class="subtab-btn" id="subtabBtnTutorial" onclick="switchSubTab(1)">
+          🎓 Tutorial Pemula
+        </button>
+      </div>
+
+      <!-- VIEW 1: KATALOG GERAKAN PER KATEGORI -->
+      <div id="subviewExercises" style="display: flex; flex-direction: column; gap: 10px;">
+        <!-- Filter Kategori Buttons (Horizontal Scroll) -->
+        <div class="filter-pills-row">
+          <div class="filter-pill active" onclick="filterCategory('ALL', this)">🔥 Semua</div>
+          <div class="filter-pill" onclick="filterCategory('BACK', this)">🔙 Punggung</div>
+          <div class="filter-pill" onclick="filterCategory('CHEST', this)">🛡️ Dada</div>
+          <div class="filter-pill" onclick="filterCategory('LEGS', this)">🦵 Kaki</div>
+          <div class="filter-pill" onclick="filterCategory('SHOULDERS', this)">🥋 Bahu</div>
+          <div class="filter-pill" onclick="filterCategory('ARMS', this)">💪 Lengan</div>
+          <div class="filter-pill" onclick="filterCategory('CORE', this)">⚡ Perut</div>
+        </div>
+
+        <!-- Banner Info Kategori Aktif -->
+        <div id="categoryActiveBanner" class="card"
+          style="background: linear-gradient(135deg, rgba(56,189,248,0.15) 0%, var(--surface) 100%); border-color: rgba(56,189,248,0.4); padding: 12px 14px;">
+          <div style="font-size: 13px; font-weight: 800; color: #fff;" id="catBannerTitle">Katalog Lengkap Gerakan</div>
+          <div style="font-size: 11px; color: var(--text-muted);" id="catBannerSubtitle">Klik salah satu gerakan untuk
+            melihat foto/diagram visual, langkah, dan tips form!</div>
+        </div>
+
+        <!-- Dynamic Container for Exercises -->
+        <div id="exerciseListContainer" style="display: flex; flex-direction: column; gap: 10px;">
+          <!-- Populated by JavaScript -->
+        </div>
+      </div>
+
+      <!-- VIEW 2: TUTORIAL PEMULA LENGKAP -->
+      <div id="subviewTutorial" style="display: none; flex-direction: column; gap: 12px;">
+        <div class="card"
+          style="background: linear-gradient(135deg, rgba(255,90,60,0.15) 0%, var(--surface) 100%); border-color: rgba(255,90,60,0.4);">
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <div style="font-size: 26px;">🎓</div>
+            <div>
+              <div style="font-size: 15px; font-weight: 900; color: #fff;">Panduan Pemula dari Nol</div>
+              <div style="font-size: 11px; color: var(--coral-light); font-weight: 700;">6 Kunci Utama Pembentukan Otot
+                Tanpa Cedera</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Dynamic Container for Lessons -->
+        <div id="lessonListContainer" style="display: flex; flex-direction: column; gap: 10px;">
+          <!-- Populated by JavaScript -->
+        </div>
+      </div>
+    </div>
+
+    <!-- Screen Content: TAB 2 (AKTIVITAS & GAMIFIKASI) -->
+    <div id="tabAktivitas" class="screen-content" style="display: none;">
+      <!-- Streak Banner -->
+      <div class="streak-banner">
+        <div style="display: flex; align-items: center; justify-content: space-between;">
+          <div style="font-size: 12px; color: var(--coral-light); font-weight: 700;">STREAK KONSISTENSI</div>
+          <div
+            style="background: var(--elevated); padding: 4px 8px; border-radius: 8px; font-size: 11px; color: var(--text-muted);">
+            Rekor: 8 Hari</div>
+        </div>
+        <div class="streak-badge" id="streakCount">5 Hari Beruntun! 🔥</div>
+        <p style="font-size: 11px; color: var(--green);">✅ Latihan hari ini selesai! Terus pertahankan.</p>
+      </div>
+
+      <!-- Level & XP Card -->
+      <div class="level-card">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <div>
+            <div style="font-size: 15px; font-weight: 800;" id="levelTitle">Level 2: Konsisten Berlatih</div>
+            <div style="font-size: 11px; color: var(--green);">+50 XP tiap sesi latihan</div>
+          </div>
+          <div
+            style="background: var(--elevated); padding: 6px 10px; border-radius: 8px; font-weight: 900; font-size: 13px;"
+            id="xpBadge">350 XP</div>
+        </div>
+        <div class="progress-bar-bg">
+          <div class="progress-fill" id="progressFill" style="width: 70%;"></div>
+        </div>
+        <div style="display: flex; justify-content: space-between; font-size: 10px; color: var(--text-muted);">
+          <span id="xpCurrent">350 XP</span>
+          <span>Target Level 3: 500 XP</span>
+        </div>
+      </div>
+
+      <!-- Quick Log Button -->
+      <button class="btn-quick-log" onclick="finishWorkout('Latihan Bebas')">
+        ⚡ Catat Selesai Latihan Cepat (+50 XP)
+      </button>
+
+      <!-- Badges Section -->
+      <div class="card">
+        <div class="card-title">
+          <span>Lencana Prestasi</span>
+          <span style="color: var(--coral); font-size: 12px;" id="badgeUnlockedCount">5 / 8 Terbuka</span>
+        </div>
+        <div class="badges-grid">
+          <div class="badge-box unlocked">
+            <div class="badge-icon">🌟</div>
+            <div class="badge-name">Langkah Pertama</div>
+            <div class="badge-status">Terbuka 🎉</div>
+          </div>
+          <div class="badge-box unlocked">
+            <div class="badge-icon">🔥</div>
+            <div class="badge-name">Streak 3 Hari</div>
+            <div class="badge-status">Terbuka 🎉</div>
+          </div>
+          <div class="badge-box unlocked">
+            <div class="badge-icon">👑</div>
+            <div class="badge-name">Master Variasi</div>
+            <div class="badge-status">Terbuka 🎉</div>
+          </div>
+          <div class="badge-box unlocked">
+            <div class="badge-icon">🌅</div>
+            <div class="badge-name">Pejuang Pagi</div>
+            <div class="badge-status">Terbuka 🎉</div>
+          </div>
+          <div class="badge-box">
+            <div class="badge-icon">⚡</div>
+            <div class="badge-name">Pejuang 7 Hari</div>
+            <div class="badge-status" style="color: var(--text-muted);">5/7 hari</div>
+          </div>
+          <div class="badge-box">
+            <div class="badge-icon">🏆</div>
+            <div class="badge-name">Klub 10 Sesi</div>
+            <div class="badge-status" style="color: var(--text-muted);">7/10 sesi</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Screen Content: TAB 3 (PROFIL SAYA) -->
+    <div id="tabProfil" class="screen-content" style="display: none;">
+      <!-- Profile Header Card with Edit Button -->
+      <div class="profile-card">
+        <div class="profile-header-box">
+          <div class="profile-user-info">
+            <div class="avatar-large" id="avatarDisplay">🦁</div>
+            <div>
+              <div style="font-size: 18px; font-weight: 900;" id="userNameDisplay">Sobat Bugar</div>
+              <div style="font-size: 12px; color: var(--text-muted);" id="userBioDisplay">Pria • 24 Tahun • Pemula</div>
+              <div style="margin-top: 6px; display: flex; gap: 6px; flex-wrap: wrap;">
+                <span
+                  style="background: var(--coral-muted); color: var(--coral-light); padding: 3px 8px; border-radius: 6px; font-size: 10px; font-weight: 700;"
+                  id="userGoalDisplay">
+                  Bulking / Tambah Otot
+                </span>
+                <span
+                  style="background: var(--elevated); color: var(--text-gray); padding: 3px 8px; border-radius: 6px; font-size: 10px; font-weight: 600;"
+                  id="userFavCategoryDisplay">
+                  Punggung (Back)
+                </span>
+              </div>
+            </div>
+          </div>
+          <button class="btn-edit-profile" onclick="openEditProfileModal()">
+            ✏️ Ubah
+          </button>
+        </div>
+        <div id="userMottoDisplay"
+          style="margin-top: 10px; padding: 8px 12px; background: var(--elevated); border-radius: 8px; font-size: 11px; color: var(--text-gray); font-style: italic;">
+          “Konsisten latihan untuk tubuh lebih sehat & bugar! 💪”
+        </div>
+      </div>
+
+      <!-- Promo Banner Pintas ke Panduan & Gerakan Latihan -->
+      <div class="card"
+        style="background: linear-gradient(135deg, rgba(255,90,60,0.15) 0%, var(--surface) 100%); border-color: rgba(255,90,60,0.4); cursor: pointer;"
+        onclick="switchTab(1, document.querySelectorAll('.nav-item')[1])">
+        <div style="display: flex; align-items: center; justify-content: space-between;">
+          <div style="display: flex; align-items: center; gap: 12px;">
+            <div
+              style="width: 42px; height: 42px; border-radius: 50%; background: var(--coral); display: flex; align-items: center; justify-content: center; font-size: 20px;">
+              📖
+            </div>
+            <div>
+              <div style="font-size: 10px; font-weight: 800; color: var(--coral-light); text-transform: uppercase;">
+                PANDUAN LATIHAN PEMULA</div>
+              <div style="font-size: 14px; font-weight: 800; color: #fff;">Katalog Gerakan & Teknik</div>
+              <div style="font-size: 11px; color: var(--text-muted);">Lihat foto/diagram latihan Back, Chest, Legs, dll.
+              </div>
+            </div>
+          </div>
+          <span style="color: var(--coral); font-size: 18px; font-weight: bold;">➔</span>
+        </div>
+      </div>
+
+      <!-- Live BMI Calculator Card -->
+      <div class="card">
+        <div class="card-title">
+          <span>Kalkulator BMI & Berat Badan</span>
+          <span class="bmi-pill" id="bmiPill">Ideal (Normal)</span>
+        </div>
+        <div style="display: flex; align-items: baseline; gap: 8px;">
+          <div class="bmi-number" id="bmiVal">23.0</div>
+          <span style="color: var(--text-muted); font-size: 12px;">Indeks Massa Tubuh (BMI)</span>
+        </div>
+
+        <div class="slider-row">
+          <div class="slider-label"><span>Tinggi Badan</span><b id="heightText">172 cm</b></div>
+          <input type="range" min="140" max="210" value="172" id="heightSlider" oninput="updateBmi()">
+        </div>
+
+        <div class="slider-row">
+          <div class="slider-label"><span>Berat Badan</span><b id="weightText">68 kg</b></div>
+          <input type="range" min="40" max="140" value="68" id="weightSlider" oninput="updateBmi()">
+        </div>
+
+        <div
+          style="margin-top: 12px; padding: 10px; background: var(--elevated); border-radius: 10px; font-size: 11px; color: var(--text-gray);">
+          💡 Berat ideal untuk tinggi <b id="idealHeightInfo">172 cm</b> adalah <b style="color: var(--green);"
+            id="idealWeightRange">54.7 – 73.7 kg</b>.
+        </div>
+      </div>
+
+      <!-- Health Recommendation Cards -->
+      <div class="two-cols">
+        <div class="metric-mini">
+          <div style="font-size: 18px;">💧</div>
+          <div style="font-size: 10px; color: var(--text-muted); margin-top: 4px;">Target Air Harian</div>
+          <div style="font-size: 16px; font-weight: 800;" id="waterVal">2.4 L</div>
+          <div style="font-size: 10px; color: var(--text-gray);" id="waterMl">2,380 ml / hari</div>
+        </div>
+
+        <div class="metric-mini">
+          <div style="font-size: 18px;">🔥</div>
+          <div style="font-size: 10px; color: var(--text-muted); margin-top: 4px;">Kalori BMR Dasar</div>
+          <div style="font-size: 16px; font-weight: 800;" id="bmrVal">1,650</div>
+          <div style="font-size: 10px; color: var(--text-gray);">kkal / hari</div>
+        </div>
+      </div>
+
+      <!-- Daily Motivation Card -->
+      <div class="card" style="border-color: rgba(255,90,60,0.3);">
+        <div class="card-title">
+          <span>Motivasi Hari Ini ✨</span>
+          <button
+            style="background: none; border: none; color: var(--coral); font-size: 11px; font-weight: 700; cursor: pointer;"
+            onclick="nextQuote()">Ganti 🔄</button>
+        </div>
+        <p id="quoteText" style="font-size: 13px; color: #fff; font-weight: 600; line-height: 1.5;">“Keringat hari ini
+          adalah kekuatan dan rasa bangga hari esok.”</p>
+      </div>
+    </div>
+
+    <!-- Floating Action Button for Schedule Tab -->
+    <button class="fab" id="fabAdd" onclick="openAddReminderModal()">+</button>
+
+    <!-- Bottom Navigation (4 Tabs) -->
+    <div class="bottom-nav">
+      <div class="nav-item active" onclick="switchTab(0, this)">
+        <div class="nav-icon-box">📅</div>
+        <span>Jadwal</span>
+      </div>
+      <div class="nav-item" onclick="switchTab(1, this)">
+        <div class="nav-icon-box">📖</div>
+        <span>Panduan</span>
+      </div>
+      <div class="nav-item" onclick="switchTab(2, this)">
+        <div class="nav-icon-box">🏆</div>
+        <span>Aktivitas</span>
+      </div>
+      <div class="nav-item" onclick="switchTab(3, this)">
+        <div class="nav-icon-box">👤</div>
+        <span>Profil</span>
+      </div>
+    </div>
+
+    <!-- MODAL 1: UBAH PROFIL & GANTI FOTO / AVATAR -->
+    <div id="modalEditProfile" class="modal-overlay">
+      <div class="modal-sheet">
+        <div class="modal-title">
+          <span>✏️ Edit Profil & Ganti Foto / Avatar</span>
+          <button class="modal-close" onclick="closeEditProfileModal()">✕</button>
+        </div>
+
+        <!-- Photo & Avatar Live Preview & Upload -->
+        <div
+          style="background: var(--elevated); border-radius: 14px; padding: 12px; display: flex; align-items: center; justify-content: space-between;">
+          <div style="display: flex; align-items: center; gap: 12px;">
+            <div class="avatar-large" id="modalAvatarPreview" style="width: 54px; height: 54px; font-size: 26px;">🦁
+            </div>
+            <div>
+              <div style="font-size: 13px; font-weight: 800; color: #fff;" id="modalAvatarTypeLabel">Avatar Emoji Aktif
+              </div>
+              <div style="font-size: 11px; color: var(--text-muted);" id="modalAvatarSubLabel">Kamu bisa pakai foto
+                sendiri dari galeri!</div>
+            </div>
+          </div>
+          <div style="display: flex; flex-direction: column; gap: 4px;">
+            <input type="file" id="profilePhotoInput" accept="image/*" style="display: none;"
+              onchange="handleProfilePhotoUpload(this)">
+            <button
+              style="background: var(--coral); color: #fff; border: none; padding: 6px 12px; border-radius: 10px; font-size: 11px; font-weight: 800; cursor: pointer;"
+              onclick="document.getElementById('profilePhotoInput').click()">
+              📸 Pilih Foto
+            </button>
+            <button id="btnRemovePhoto"
+              style="background: transparent; color: var(--coral-light); border: 1px solid var(--border); padding: 4px 8px; border-radius: 8px; font-size: 10px; font-weight: 700; cursor: pointer; display: none;"
+              onclick="removeProfilePhoto()">
+              🗑️ Pakai Emoji
+            </button>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Nama Pengguna</label>
+          <input type="text" id="inputProfileName" class="form-input" placeholder="Masukkan nama kamu..."
+            value="Sobat Bugar">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Motto / Bio Kebugaran</label>
+          <input type="text" id="inputProfileBio" class="form-input"
+            placeholder="Contoh: Konsisten latihan untuk tubuh lebih bugar! 💪"
+            value="Konsisten latihan untuk tubuh lebih sehat & bugar! 💪">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Pilih Avatar Kebugaran (24 Pilihan)</label>
+          <div class="chips-row" id="avatarPicker" style="flex-wrap: wrap;">
+            <span class="chip-item active" onclick="selectAvatar(this, '🦁')">🦁 Singa</span>
+            <span class="chip-item" onclick="selectAvatar(this, '🏋️')">🏋️ Gym</span>
+            <span class="chip-item" onclick="selectAvatar(this, '⚡')">⚡ Petir</span>
+            <span class="chip-item" onclick="selectAvatar(this, '🦾')">🦾 Robot</span>
+            <span class="chip-item" onclick="selectAvatar(this, '🚀')">🚀 Roket</span>
+            <span class="chip-item" onclick="selectAvatar(this, '🥊')">🥊 Tinju</span>
+            <span class="chip-item" onclick="selectAvatar(this, '🧘')">🧘 Yoga</span>
+            <span class="chip-item" onclick="selectAvatar(this, '🏃')">🏃 Pelari</span>
+            <span class="chip-item" onclick="selectAvatar(this, '🦍')">🦍 Gorila</span>
+            <span class="chip-item" onclick="selectAvatar(this, '🐺')">🐺 Serigala</span>
+            <span class="chip-item" onclick="selectAvatar(this, '🐅')">🐅 Harimau</span>
+            <span class="chip-item" onclick="selectAvatar(this, '🦅')">🦅 Elang</span>
+            <span class="chip-item" onclick="selectAvatar(this, '🥋')">🥋 Karate</span>
+            <span class="chip-item" onclick="selectAvatar(this, '🚴')">🚴 Sepeda</span>
+            <span class="chip-item" onclick="selectAvatar(this, '🏊')">🏊 Renang</span>
+            <span class="chip-item" onclick="selectAvatar(this, '🏆')">🏆 Trofi</span>
+            <span class="chip-item" onclick="selectAvatar(this, '🔥')">🔥 Api</span>
+            <span class="chip-item" onclick="selectAvatar(this, '👑')">👑 Mahkota</span>
+            <span class="chip-item" onclick="selectAvatar(this, '🛡️')">🛡️ Tameng</span>
+            <span class="chip-item" onclick="selectAvatar(this, '💪')">💪 Berotot</span>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Atau Ketik Karakter / Emoji Kustom Sendiri</label>
+          <div style="display: flex; gap: 8px;">
+            <input type="text" id="inputCustomEmoji" class="form-input" style="flex: 1;"
+              placeholder="Ketik emoji apa saja (misal: 💎, ⚔️, dll)...">
+            <button type="button"
+              style="background: var(--elevated); border: 1px solid var(--border); color: var(--coral); padding: 0 14px; border-radius: 12px; font-weight: 800; cursor: pointer;"
+              onclick="applyCustomEmoji()">
+              Pakai
+            </button>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Tingkat Pengalaman Latihan</label>
+          <div class="chips-row" id="levelPicker">
+            <span class="chip-item active" onclick="selectLevel(this, 'Pemula')">🌱 Pemula</span>
+            <span class="chip-item" onclick="selectLevel(this, 'Menengah')">🔥 Menengah</span>
+            <span class="chip-item" onclick="selectLevel(this, 'Mahir')">🏆 Mahir</span>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Fokus Latihan Favorit</label>
+          <div class="chips-row" id="favCatPicker" style="flex-wrap: wrap;">
+            <span class="chip-item active" onclick="selectFavCat(this, 'Punggung (Back)')">🔙 Punggung</span>
+            <span class="chip-item" onclick="selectFavCat(this, 'Dada (Chest)')">🛡️ Dada</span>
+            <span class="chip-item" onclick="selectFavCat(this, 'Kaki (Legs)')">🦵 Kaki</span>
+            <span class="chip-item" onclick="selectFavCat(this, 'Bahu (Shoulders)')">🥋 Bahu</span>
+            <span class="chip-item" onclick="selectFavCat(this, 'Lengan (Arms)')">💪 Lengan</span>
+            <span class="chip-item" onclick="selectFavCat(this, 'Perut (Core)')">⚡ Perut</span>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Target Latihan Kamu</label>
+          <div class="chips-row" id="goalPicker">
+            <span class="chip-item active" onclick="selectGoal(this, 'Bulking / Tambah Otot')">💪 Tambah Otot</span>
+            <span class="chip-item" onclick="selectGoal(this, 'Cutting / Turunkan Berat')">🔥 Turun Lemak</span>
+            <span class="chip-item" onclick="selectGoal(this, 'Jaga Stamina & Bugar')">🏃 Bugar & Stamina</span>
+            <span class="chip-item" onclick="selectGoal(this, 'Kekuatan Maksimal')">🏆 Kekuatan</span>
+          </div>
+        </div>
+
+        <div class="two-cols">
+          <div class="form-group">
+            <label class="form-label">Jenis Kelamin</label>
+            <select id="selectGender" class="form-input">
+              <option value="Pria">Pria</option>
+              <option value="Wanita">Wanita</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Usia (Tahun)</label>
+            <input type="number" id="inputAge" class="form-input" value="24" min="12" max="99">
+          </div>
+        </div>
+
+        <button class="btn-save" onclick="saveProfileChanges()">
+          Simpan Profil & Foto ✨
+        </button>
+      </div>
+    </div>
+
+    <!-- MODAL DETAIL GERAKAN LATIHAN LENGKAP -->
+    <div id="modalExerciseDetail" class="modal-overlay">
+      <div class="modal-sheet" style="max-height: 92%;">
+        <div class="modal-title">
+          <span id="detailExerciseName">Nama Gerakan</span>
+          <button class="modal-close" onclick="closeExerciseDetailModal()">✕</button>
+        </div>
+
+        <!-- Visual Graphic Large Box -->
+        <div
+          style="background: linear-gradient(135deg, rgba(255,90,60,0.15), var(--elevated)); border: 1px solid var(--border); border-radius: 16px; padding: 16px; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+          <div id="detailVisualContainer"
+            style="width: 110px; height: 110px; display: flex; align-items: center; justify-content: center;">
+            <!-- Rendered SVG -->
+          </div>
+          <div style="font-size: 11px; color: var(--text-gray); margin-top: 6px; font-weight: 700;"
+            id="detailEquipmentTag">
+            🛠️ Dumbbell & Bangku
+          </div>
+        </div>
+
+        <!-- Muscle Badges -->
+        <div class="two-cols">
+          <div style="background: var(--elevated); padding: 8px 10px; border-radius: 10px;">
+            <div style="font-size: 10px; color: var(--text-muted);">Otot Utama (Primary)</div>
+            <div style="font-size: 12px; font-weight: 800; color: var(--coral-light); margin-top: 2px;"
+              id="detailPrimaryMuscle">Punggung</div>
+          </div>
+          <div style="background: var(--elevated); padding: 8px 10px; border-radius: 10px;">
+            <div style="font-size: 10px; color: var(--text-muted);">Otot Pendukung</div>
+            <div style="font-size: 12px; font-weight: 800; color: #fff; margin-top: 2px;" id="detailSecondaryMuscle">
+              Bisep, Bahu</div>
+          </div>
+        </div>
+
+        <!-- Beginner Recommendation -->
+        <div
+          style="background: rgba(255,90,60,0.15); border: 1px solid rgba(255,90,60,0.4); border-radius: 12px; padding: 10px 12px;">
+          <div style="font-size: 10px; font-weight: 800; color: var(--coral-light);">⭐ REKOMENDASI PEMULA:</div>
+          <div style="font-size: 13px; font-weight: 800; color: #fff; margin-top: 2px;" id="detailRecommendation">3 Set
+            × 10 - 12 Repetisi • Istirahat 60s</div>
+        </div>
+
+        <!-- Steps Section -->
+        <div>
+          <div style="font-size: 13px; font-weight: 800; color: #fff; margin-bottom: 6px;">Langkah-Langkah Pelaksanaan:
+          </div>
+          <div id="detailStepsContainer" style="display: flex; flex-direction: column; gap: 6px;">
+            <!-- Populated via JS -->
+          </div>
+        </div>
+
+        <!-- Form Tips -->
+        <div
+          style="background: rgba(61,220,132,0.1); border: 1px solid rgba(61,220,132,0.3); border-radius: 12px; padding: 10px 12px;">
+          <div style="font-size: 11px; font-weight: 800; color: var(--green); margin-bottom: 4px;">💡 Tips Form &
+            Aktivasi:</div>
+          <div id="detailTipsContainer" style="font-size: 11px; color: var(--text-gray); line-height: 1.4;"></div>
+        </div>
+
+        <!-- Common Mistakes -->
+        <div
+          style="background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.3); border-radius: 12px; padding: 10px 12px;">
+          <div style="font-size: 11px; font-weight: 800; color: #ef4444; margin-bottom: 4px;">⚠️ Kesalahan Pemula
+            (Hindari):</div>
+          <div id="detailMistakesContainer" style="font-size: 11px; color: var(--text-gray); line-height: 1.4;"></div>
+        </div>
+
+        <button class="btn-save" style="background: var(--elevated); color: #fff;" onclick="closeExerciseDetailModal()">
+          Tutup Panduan
+        </button>
+      </div>
+    </div>
+
+    <!-- MODAL 2: TAMBAH / ATUR PENGINGAT & MUSIK ALARM -->
+    <div id="modalAddReminder" class="modal-overlay">
+      <div class="modal-sheet">
+        <div class="modal-title">
+          <span>⏰ Atur Jadwal & Suara Alarm</span>
+          <button class="modal-close" onclick="closeAddReminderModal()">✕</button>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Fokus Split Latihan</label>
+          <div class="chips-row" id="splitPicker">
+            <span class="chip-item active" onclick="selectSplit(this, 'Dada & Trisep')">Dada & Trisep</span>
+            <span class="chip-item" onclick="selectSplit(this, 'Punggung & Bisep')">Punggung & Bisep</span>
+            <span class="chip-item" onclick="selectSplit(this, 'Kaki & Perut')">Kaki & Perut</span>
+            <span class="chip-item" onclick="selectSplit(this, 'Bahu & Lengan')">Bahu & Lengan</span>
+            <span class="chip-item" onclick="selectSplit(this, 'Kardio & HIIT')">Kardio & HIIT</span>
+          </div>
+        </div>
+
+        <div class="two-cols">
+          <div class="form-group">
+            <label class="form-label">Waktu Alarm</label>
+            <input type="time" id="inputAlarmTime" class="form-input" value="07:00">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Alarm Layar Penuh</label>
+            <div style="display: flex; align-items: center; height: 42px;">
+              <span style="font-size: 11px; color: var(--green); font-weight: 700;">Aktif Mendengung 🔔</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Music & Sound Section -->
+        <div class="form-group">
+          <label class="form-label">Pilih Nada / Musik Alarm 🔥</label>
+          <div class="chips-row" id="musicPicker">
+            <span class="chip-music active" onclick="selectMusicPreset(this, 'Energetic Gym Beat', 'synth_gym')">
+              ⚡ Energetic Gym Beat
+            </span>
+            <span class="chip-music" onclick="selectMusicPreset(this, 'Hard Rock Workout', 'synth_rock')">
+              🎸 Hard Rock Workout
+            </span>
+            <span class="chip-music" onclick="selectMusicPreset(this, 'Electronic Bass Drop', 'synth_edm')">
+              🎧 Electronic Bass Drop
+            </span>
+            <span class="chip-music" onclick="selectMusicPreset(this, 'Epic Motivation Horn', 'synth_horn')">
+              🎺 Epic Motivation Horn
+            </span>
+            <span class="chip-music" onclick="selectMusicPreset(this, 'Nada Alarm Klasik', 'synth_classic')">
+              ⏰ Nada Alarm Klasik
+            </span>
+          </div>
+        </div>
+
+        <!-- Custom Audio Upload / Phone Music -->
+        <div
+          style="background: var(--elevated); border: 1px dashed var(--purple); border-radius: 12px; padding: 10px 12px;">
+          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
+            <span style="font-size: 11px; font-weight: 700; color: #d8b4fe;">📁 Musik / Lagu Pilihan Sendiri</span>
+            <button
+              style="background: none; border: none; color: var(--coral-light); font-size: 11px; font-weight: 700; cursor: pointer;"
+              onclick="previewCurrentSound()">
+              ▶️ Dengar Suara
+            </button>
+          </div>
+          <input type="file" id="customAudioFileInput" accept="audio/*"
+            style="font-size: 11px; color: var(--text-muted); width: 100%;" onchange="handleCustomAudioUpload(this)">
+          <div style="font-size: 10px; color: var(--text-muted); margin-top: 4px;" id="customAudioStatus">
+            Kamu bisa pilih file MP3 favorit dari HP/laptop untuk alarm!
+          </div>
+        </div>
+
+        <button class="btn-save" onclick="saveNewReminder()">
+          Simpan Jadwal Alarm 💾
+        </button>
+      </div>
+    </div>
+
+    <!-- MODAL 3: FULL-SCREEN RINGING ALARM (REAL SOUND DEMO) -->
+    <div id="alarmModal" class="alarm-modal">
+      <div style="text-align: center;">
+        <div style="font-size: 44px; font-weight: 900; color: #fff; letter-spacing: -1px;" id="alarmRingingTime">07:00
+        </div>
+        <div style="font-size: 13px; color: var(--coral-light); font-weight: 800; margin-top: 2px;">WAKTUNYA LATIHAN
+          SEKARANG! 🔥</div>
+      </div>
+
+      <div style="text-align: center; width: 100%;">
+        <div class="alarm-icon-pulse" id="alarmRingingAvatar">🏋️</div>
+        <div style="font-size: 24px; font-weight: 900; color: #fff;" id="alarmRingingSplit">Dada & Trisep</div>
+
+        <!-- Active Sound Badge & Wave Visualizer -->
+        <div class="alarm-music-pill">
+          <span id="alarmSoundNameDisplay">🎵 Memutar: Energetic Gym Beat</span>
+        </div>
+
+        <div class="audio-visualizer">
+          <div class="wave-bar"></div>
+          <div class="wave-bar"></div>
+          <div class="wave-bar"></div>
+          <div class="wave-bar"></div>
+          <div class="wave-bar"></div>
+        </div>
+
+        <p style="font-size: 12px; color: var(--text-gray); margin-top: 4px; padding: 0 10px;"
+          id="alarmRingingMotivational">
+          "Keringat hari ini adalah kekuatan dan rasa bangga hari esok. 45 menit latihan hanyalah 4% dari harimu!"
+        </p>
+      </div>
+
+      <div class="alarm-btn-stack">
+        <button class="alarm-btn" style="background: var(--green); color: #000;" onclick="finishWorkoutFromAlarm()">
+          ✓ Latihan Selesai! (+50 XP)
+        </button>
+        <button class="alarm-btn" style="background: var(--coral); color: #fff;" onclick="closeAlarmModal()">
+          Buka Jadwal & Mulai Sesi
+        </button>
+        <button class="alarm-btn"
+          style="background: transparent; border: 1px solid var(--border); color: var(--text-muted);"
+          onclick="snoozeAlarm()">
+          Tunda 5 Menit ⏰
+        </button>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    // State Variables
+    let currentXp = 350;
+    let currentStreak = 5;
+    let completedCount = 3;
+
+    // Profile State
+    let profileData = {
+      name: "Sobat Bugar",
+      avatar: "🦁",
+      photoUrl: null,
+      bio: "Konsisten latihan untuk tubuh lebih sehat & bugar! 💪",
+      level: "Pemula",
+      favoriteCategory: "Punggung (Back)",
+      goal: "Bulking / Tambah Otot",
+      gender: "Pria",
+      age: 24,
+      height: 172,
+      weight: 68
+    };
+
+    // Active Sound Selection
+    let selectedMusicName = "Energetic Gym Beat";
+    let selectedSoundType = "synth_gym";
+    let customAudioElement = null;
+
+    // Audio Context for Web Synth
+    let audioCtx = null;
+    let synthInterval = null;
+
+    const quotes = [
+      "“Keringat hari ini adalah kekuatan dan rasa bangga hari esok.”",
+      "“Disiplin adalah jembatan antara target dan hasil nyata.”",
+      "“Jangan berhenti ketika lelah, berhentilah ketika kamu selesai.”",
+      "“45 menit latihan hanyalah 4% dari harimu. Tidak ada alasan!”",
+      "“Otot tidak tumbuh dari zona nyaman. Dorong batas kemampuanmu!”"
+    ];
+    let qIdx = 0;
+
+    // Database Gerakan Latihan (18 Gerakan Lengkap per Kategori)
+    const exerciseData = [
+      // PUNGGUNG (BACK)
+      {
+        id: "back_1",
+        category: "BACK",
+        name: "Lat Pulldown",
+        equipment: "Mesin Kabel",
+        difficulty: "Pemula",
+        primary: "Latissimus Dorsi (Sayap Punggung)",
+        secondary: "Biceps, Rhomboids, Rear Delts",
+        shortDesc: "Latihan terbaik pemula untuk melebarkan punggung dan membentuk siluet V-Taper yang gagah.",
+        rec: "3 Set × 10 - 12 Reps • Istirahat 60s",
+        svg: `<svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <line x1="15" y1="18" x2="85" y2="18" stroke="#E2E2E6" stroke-width="6" stroke-linecap="round"/>
+          <line x1="50" y1="2" x2="50" y2="18" stroke="#8E8E93" stroke-width="4"/>
+          <path d="M30 25 L30 55 M70 25 L70 55" stroke="#38BDF8" stroke-width="4" stroke-dasharray="3 3"/>
+          <polyline points="26,50 30,58 34,50" fill="none" stroke="#38BDF8" stroke-width="3"/>
+          <polyline points="66,50 70,58 74,50" fill="none" stroke="#38BDF8" stroke-width="3"/>
+          <circle cx="50" cy="42" r="11" fill="#E2E2E6"/>
+          <path d="M38 58 Q50 54 62 58 L66 85 L34 85 Z" fill="#38BDF8" opacity="0.9"/>
+          <line x1="28" y1="25" x2="42" y2="58" stroke="#E2E2E6" stroke-width="5" stroke-linecap="round"/>
+          <line x1="72" y1="25" x2="58" y2="58" stroke="#E2E2E6" stroke-width="5" stroke-linecap="round"/>
+        </svg>`,
+        steps: [
+          "Duduk di mesin lat pulldown, atur bantalan paha hingga mengunci kaki dengan kokoh.",
+          "Pegang bar lebih lebar dari bahu, telapak menghadap ke depan.",
+          "Busungkan dada ke atas, lalu tarik bar ke bawah hingga menyentuh dada bagian atas.",
+          "Fokus menarik dengan siku ke bawah dan belakang, remas otot sayap punggung.",
+          "Lepas beban ke atas secara perlahan selama 2-3 detik hingga lats terentang."
+        ],
+        tips: "Bayangkan tanganmu hanya kait cantelan, tarik menggunakan kekuatan siku dan punggung.",
+        mistakes: "Menarik bar ke belakang leher (sangat berbahaya bagi sendi bahu) atau mengayunkan pinggang berlebihan."
+      },
+      {
+        id: "back_2",
+        category: "BACK",
+        name: "Dumbbell Bent-Over Row",
+        equipment: "Dumbbell & Bangku",
+        difficulty: "Pemula",
+        primary: "Rhomboids & Punggung Tengah",
+        secondary: "Latissimus, Bisep",
+        shortDesc: "Menebalkan otot punggung tengah dengan tumpuan lutut di bangku agar pinggang tetap aman.",
+        rec: "3 Set × 10 Reps per sisi • Istirahat 60s",
+        svg: `<svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <line x1="10" y1="75" x2="90" y2="75" stroke="#636366" stroke-width="5"/>
+          <circle cx="30" cy="30" r="10" fill="#E2E2E6"/>
+          <line x1="30" y1="40" x2="70" y2="55" stroke="#38BDF8" stroke-width="7" stroke-linecap="round"/>
+          <path d="M50 50 L58 32 L72 32" stroke="#E2E2E6" stroke-width="5" stroke-linecap="round" fill="none"/>
+          <rect x="52" y="24" width="22" height="8" rx="4" fill="#38BDF8"/>
+          <line x1="58" y1="65" x2="58" y2="38" stroke="#38BDF8" stroke-width="3" stroke-dasharray="3 3"/>
+          <polyline points="54,44 58,36 62,44" fill="none" stroke="#38BDF8" stroke-width="3"/>
+        </svg>`,
+        steps: [
+          "Letakkan lutut dan tangan kiri di bangku datar sebagai penopang yang stabil.",
+          "Pegang dumbbell di tangan kanan, biarkan lengan menjuntai lurus ke bawah.",
+          "Jaga punggung tetap lurus datar dan kunci otot perut.",
+          "Tarik dumbbell ke atas ke arah saku celana belakang dengan mengarahkan siku ke langit-langit.",
+          "Tahan 1 detik di puncak kontraksi, lalu turunkan perlahan."
+        ],
+        tips: "Arahkan siku ke arah pinggul belakang, bukan menarik ke arah ketiak.",
+        mistakes: "Memutar badan ke samping untuk mengangkat beban yang terlalu berat."
+      },
+      {
+        id: "back_3",
+        category: "BACK",
+        name: "Seated Cable Row",
+        equipment: "Mesin Kabel",
+        difficulty: "Pemula",
+        primary: "Rhomboids & Trapezius",
+        secondary: "Lats, Bisep",
+        shortDesc: "Membangun ketebalan punggung dan memperbaiki postur tubuh agar tegak dan percaya diri.",
+        rec: "3 Set × 12 Reps • Fokus remas belikat",
+        svg: `<svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <line x1="5" y1="70" x2="85" y2="70" stroke="#636366" stroke-width="5"/>
+          <circle cx="65" cy="30" r="10" fill="#E2E2E6"/>
+          <line x1="65" y1="40" x2="65" y2="70" stroke="#38BDF8" stroke-width="7" stroke-linecap="round"/>
+          <line x1="65" y1="70" x2="30" y2="70" stroke="#E2E2E6" stroke-width="6"/>
+          <line x1="15" y1="50" x2="55" y2="50" stroke="#8E8E93" stroke-width="3"/>
+          <line x1="65" y1="45" x2="48" y2="50" stroke="#E2E2E6" stroke-width="5"/>
+          <polyline points="40,46 32,50 40,54" fill="none" stroke="#38BDF8" stroke-width="3"/>
+        </svg>`,
+        steps: [
+          "Duduk dengan kaki ditekuk sedikit pada pijakan mesin cable row.",
+          "Pegang V-bar handle, tegakkan tubuh 90 derajat dengan dada dibusungkan.",
+          "Tarik pegangan ke arah pusar sambil merapatkan kedua tulang belikat di belakang.",
+          "Tahan 1 detik di puncak tarikan, lalu ulurkan tangan kembali ke depan perlahan."
+        ],
+        tips: "Jepit pensil imajiner di antara kedua tulang belikat saat menarik beban ke perut.",
+        mistakes: "Mengayunkan punggung maju mundur seperti mendayung perahu."
+      },
+      {
+        id: "back_4",
+        category: "BACK",
+        name: "Back Hyperextension",
+        equipment: "Bangku Roman",
+        difficulty: "Pemula",
+        primary: "Erector Spinae (Punggung Bawah)",
+        secondary: "Glutes & Hamstrings",
+        shortDesc: "Memperkuat otot punggung bawah sebagai perisai pelindung tulang belakang dan anti sakit pinggang.",
+        rec: "3 Set × 12 - 15 Reps • Gerakan halus",
+        svg: `<svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <line x1="20" y1="80" x2="80" y2="35" stroke="#636366" stroke-width="6"/>
+          <line x1="30" y1="75" x2="55" y2="55" stroke="#E2E2E6" stroke-width="6"/>
+          <line x1="55" y1="55" x2="75" y2="38" stroke="#38BDF8" stroke-width="7" stroke-linecap="round"/>
+          <circle cx="82" cy="32" r="9" fill="#E2E2E6"/>
+          <path d="M60 70 Q75 65 75 48" stroke="#38BDF8" stroke-width="3" stroke-dasharray="3 3" fill="none"/>
+        </svg>`,
+        steps: [
+          "Posisikan tubuh pada bangku hyperextension dengan bantalan di bawah pinggul.",
+          "Silangkan kedua tangan di depan dada.",
+          "Turunkan badan ke bawah perlahan dengan menekuk pinggul.",
+          "Angkat tubuh kembali ke atas hingga membentuk satu garis lurus dengan kaki."
+        ],
+        tips: "Cukup angkat sampai lurus sejajar kaki, jangan melenting ke belakang berlebihan.",
+        mistakes: "Menyentak tubuh dengan cepat atau melengkungkan pinggang terlalu tinggi."
+      },
+
+      // DADA (CHEST)
+      {
+        id: "chest_1",
+        category: "CHEST",
+        name: "Push-Up Standar",
+        equipment: "Bodyweight",
+        difficulty: "Pemula",
+        primary: "Pectoralis Major (Otot Dada)",
+        secondary: "Triceps, Bahu Depan, Core",
+        shortDesc: "Raja gerakan pembentuk dada tanpa alat. Melatih dorongan dan stabilitas seluruh tubuh.",
+        rec: "3 Set × 8 - 12 Reps (atau Knee Push-Up)",
+        svg: `<svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <line x1="10" y1="80" x2="90" y2="80" stroke="#636366" stroke-width="4"/>
+          <line x1="25" y1="58" x2="85" y2="70" stroke="#FF7E67" stroke-width="7" stroke-linecap="round"/>
+          <circle cx="20" cy="54" r="9" fill="#E2E2E6"/>
+          <line x1="32" y1="60" x2="32" y2="80" stroke="#E2E2E6" stroke-width="5" stroke-linecap="round"/>
+          <line x1="85" y1="70" x2="85" y2="80" stroke="#E2E2E6" stroke-width="4"/>
+          <path d="M38 72 L38 60" stroke="#FF7E67" stroke-width="3" stroke-dasharray="2 2"/>
+          <polyline points="35,66 38,58 41,66" fill="none" stroke="#FF7E67" stroke-width="2"/>
+        </svg>`,
+        steps: [
+          "Ambil posisi plank dengan tangan sedikit lebih lebar dari bahu.",
+          "Kencangkan perut dan pantat, tubuh lurus sempurna dari kepala ke tumit.",
+          "Turunkan dada hingga hampir menyentuh lantai (1-2 cm) dengan sudut siku 45 derajat.",
+          "Dorong lantai kuat-kuat hingga lengan lurus kembali."
+        ],
+        tips: "Jika belum kuat di lantai, lakukan Incline Push-Up dengan tangan bertumpu di kursi/meja.",
+        mistakes: "Pinggul melorot ke bawah atau siku membuka 90 derajat menyerupai huruf T."
+      },
+      {
+        id: "chest_2",
+        category: "CHEST",
+        name: "Dumbbell Flat Bench Press",
+        equipment: "Dumbbell & Bangku",
+        difficulty: "Pemula",
+        primary: "Dada Bagian Tengah",
+        secondary: "Triceps, Bahu Depan",
+        shortDesc: "Latihan kompon nomor satu untuk membangun ketebalan dan massa otot dada yang padat.",
+        rec: "3 Set × 8 - 10 Reps • Istirahat 90s",
+        svg: `<svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <line x1="15" y1="68" x2="85" y2="68" stroke="#636366" stroke-width="6"/>
+          <line x1="25" y1="60" x2="75" y2="60" stroke="#FF7E67" stroke-width="8" stroke-linecap="round"/>
+          <circle cx="20" cy="58" r="8" fill="#E2E2E6"/>
+          <line x1="45" y1="60" x2="45" y2="30" stroke="#E2E2E6" stroke-width="5"/>
+          <line x1="36" y1="28" x2="54" y2="28" stroke="#FF7E67" stroke-width="6" stroke-linecap="round"/>
+          <polyline points="41,40 45,32 49,40" fill="none" stroke="#FF7E67" stroke-width="3"/>
+        </svg>`,
+        steps: [
+          "Berbaring di bangku datar dengan kedua telapak kaki menapak kokoh di lantai.",
+          "Pegang dumbbell di samping dada dengan telapak menghadap ke depan.",
+          "Busungkan dada dan rapatkan tulang belikat ke sandaran bangku.",
+          "Dorong dumbbell lurus ke atas dada hingga lengan hampir lurus.",
+          "Turunkan perlahan selama 2-3 detik hingga dada meregang nyaman."
+        ],
+        tips: "Pertahankan sedikit lengkungan alami pada pinggang, jangan mendatarkan punggung secara paksa.",
+        mistakes: "Membenturkan kedua dumbbell di atas atau menurunkan beban terlalu cepat."
+      },
+      {
+        id: "chest_3",
+        category: "CHEST",
+        name: "Incline Dumbbell Press",
+        equipment: "Dumbbell & Bangku Miring",
+        difficulty: "Pemula",
+        primary: "Upper Chest (Dada Bagian Atas)",
+        secondary: "Bahu Depan, Triceps",
+        shortDesc: "Membentuk dada bagian atas agar penuh dan menyatu rapi dengan tulang selangka.",
+        rec: "3 Set × 10 Reps • Sudut bangku 30-45°",
+        svg: `<svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <line x1="25" y1="80" x2="85" y2="40" stroke="#636366" stroke-width="6"/>
+          <line x1="32" y1="72" x2="78" y2="44" stroke="#FF7E67" stroke-width="7" stroke-linecap="round"/>
+          <circle cx="82" cy="38" r="8" fill="#E2E2E6"/>
+          <line x1="55" y1="52" x2="55" y2="20" stroke="#E2E2E6" stroke-width="5"/>
+          <line x1="46" y1="18" x2="64" y2="18" stroke="#FF7E67" stroke-width="6" stroke-linecap="round"/>
+          <polyline points="51,28 55,20 59,28" fill="none" stroke="#FF7E67" stroke-width="3"/>
+        </svg>`,
+        steps: [
+          "Atur kemiringan bangku pada sudut 30-45 derajat.",
+          "Pegang dumbbell di samping dada atas dengan siku sudut 60 derajat.",
+          "Dorong dumbbell ke atas hingga lurus di atas dada bagian atas.",
+          "Turunkan kembali secara terkendali."
+        ],
+        tips: "Sudut bangku 30 derajat adalah sweet spot untuk aktivasi dada atas maksimal.",
+        mistakes: "Bangku terlalu tegak (melebihi 60 derajat) sehingga bahu yang mendominasi dorongan."
+      },
+
+      // KAKI (LEGS)
+      {
+        id: "leg_1",
+        category: "LEGS",
+        name: "Goblet Squat",
+        equipment: "Dumbbell",
+        difficulty: "Pemula",
+        primary: "Quadriceps (Paha Depan) & Glutes",
+        secondary: "Hamstrings, Betis, Core",
+        shortDesc: "Variasi squat terbaik bagi pemula karena beban di depan dada otomatis menjaga punggung tetap tegak.",
+        rec: "3 Set × 10 - 12 Reps • Istirahat 90s",
+        svg: `<svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="50" cy="18" r="10" fill="#E2E2E6"/>
+          <line x1="50" y1="28" x2="50" y2="52" stroke="#3DDC84" stroke-width="7"/>
+          <circle cx="50" cy="38" r="8" fill="#FF5A3C"/>
+          <line x1="50" y1="52" x2="72" y2="68" stroke="#3DDC84" stroke-width="6" stroke-linecap="round"/>
+          <line x1="72" y1="68" x2="72" y2="90" stroke="#3DDC84" stroke-width="6" stroke-linecap="round"/>
+          <path d="M25 40 L25 75" stroke="#3DDC84" stroke-width="3" stroke-dasharray="3 3"/>
+          <polyline points="21,68 25,76 29,68" fill="none" stroke="#3DDC84" stroke-width="2"/>
+        </svg>`,
+        steps: [
+          "Berdiri dengan kaki dibuka sedikit lebih lebar dari bahu, ujung jari serong keluar 15 derajat.",
+          "Pegang satu dumbbell secara vertikal menempel erat di depan dada.",
+          "Dorong pinggul ke belakang lalu tekuk lutut seolah hendak duduk di kursi.",
+          "Turun hingga paha minimal sejajar dengan lantai, jaga dada tetap tegak.",
+          "Dorong melalui tumit dan telapak kaki tengah untuk kembali berdiri tegak."
+        ],
+        tips: "Pastikan lutut membuka sejajar dengan arah jari-jari kaki saat berjongkok.",
+        mistakes: "Tumit terangkat dari lantai atau punggung membungkuk ke depan."
+      },
+      {
+        id: "leg_2",
+        category: "LEGS",
+        name: "Romanian Deadlift (RDL)",
+        equipment: "Dumbbell",
+        difficulty: "Menengah",
+        primary: "Hamstrings (Paha Belakang) & Pantat",
+        secondary: "Lower Back, Core",
+        shortDesc: "Latihan kunci pembentuk paha belakang dan postur atletis melalui gerakan engsel pinggul (Hip Hinge).",
+        rec: "3 Set × 8 - 10 Reps • Fokus peregangan paha belakang",
+        svg: `<svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="70" cy="30" r="9" fill="#E2E2E6"/>
+          <line x1="70" y1="38" x2="45" y2="52" stroke="#3DDC84" stroke-width="6" stroke-linecap="round"/>
+          <line x1="45" y1="52" x2="45" y2="88" stroke="#3DDC84" stroke-width="6" stroke-linecap="round"/>
+          <line x1="60" y1="44" x2="60" y2="70" stroke="#E2E2E6" stroke-width="4"/>
+          <circle cx="60" cy="74" r="7" fill="#FF5A3C"/>
+          <path d="M45 50 Q30 50 30 40" stroke="#3DDC84" stroke-width="3" stroke-dasharray="3 3" fill="none"/>
+        </svg>`,
+        steps: [
+          "Berdiri selebar pinggul dengan memegang sepasang dumbbell di depan paha.",
+          "Tekuk lutut sedikit (soft knee) dan kunci sudut lutut ini sepanjang gerakan.",
+          "Dorong pinggul ke belakang sejauh mungkin sambil menurunkan dumbbell meluncur dekat di depan tulang kering.",
+          "Berhenti saat merasakan peregangan kuat pada paha belakang.",
+          "Dorong pinggul kembali ke depan dan kencangkan pantat untuk berdiri tegak."
+        ],
+        tips: "Ini gerakan mendorong pantat ke belakang (Hip Hinge), bukan gerakan jongkok (Squat).",
+        mistakes: "Membungkukkan tulang punggung untuk meraih lantai lebih rendah."
+      },
+      {
+        id: "leg_3",
+        category: "LEGS",
+        name: "Walking Lunges",
+        equipment: "Bodyweight / Dumbbell",
+        difficulty: "Pemula",
+        primary: "Quadriceps & Glutes",
+        secondary: "Hamstrings, Betis, Keseimbangan",
+        shortDesc: "Melatih kekuatan satu kaki secara mandiri, memperbaiki ketimpangan kekuatan paha kiri dan kanan.",
+        rec: "3 Set × 10 Langkah per kaki • Istirahat 60s",
+        svg: `<svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="45" cy="20" r="9" fill="#E2E2E6"/>
+          <line x1="45" y1="29" x2="45" y2="55" stroke="#3DDC84" stroke-width="6"/>
+          <polyline points="45,55 70,68 70,90" stroke="#3DDC84" stroke-width="5" stroke-linecap="round" fill="none"/>
+          <polyline points="45,55 25,75 25,90" stroke="#3DDC84" stroke-width="5" stroke-linecap="round" fill="none"/>
+        </svg>`,
+        steps: [
+          "Berdiri tegak dengan tangan di pinggang.",
+          "Langkahkan kaki kanan jauh ke depan dan turunkan pinggul.",
+          "Lutut depan ditekuk 90 derajat, lutut belakang mendekati lantai.",
+          "Dorong dengan kaki depan untuk melangkah maju dan ulangi dengan kaki kiri."
+        ],
+        tips: "Jaga dada tetap tegak lurus, jangan condong ke depan.",
+        mistakes: "Langkah terlalu pendek sehingga lutut tertekan melampaui jari kaki."
+      },
+
+      // BAHU (SHOULDERS)
+      {
+        id: "shoulder_1",
+        category: "SHOULDERS",
+        name: "Overhead Dumbbell Shoulder Press",
+        equipment: "Dumbbell & Bangku Tegak",
+        difficulty: "Pemula",
+        primary: "Deltoid Depan & Samping",
+        secondary: "Triceps, Upper Chest",
+        shortDesc: "Latihan paling esensial untuk membangun bahu 3D yang lebar, tebal, dan kekuatan dorong vertikal.",
+        rec: "3 Set × 8 - 10 Reps • Istirahat 90s",
+        svg: `<svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="50" cy="35" r="9" fill="#E2E2E6"/>
+          <line x1="50" y1="44" x2="50" y2="78" stroke="#A855F7" stroke-width="7"/>
+          <line x1="50" y1="48" x2="20" y2="30" stroke="#E2E2E6" stroke-width="4"/>
+          <line x1="50" y1="48" x2="80" y2="30" stroke="#E2E2E6" stroke-width="4"/>
+          <circle cx="20" cy="24" r="6" fill="#A855F7"/>
+          <circle cx="80" cy="24" r="6" fill="#A855F7"/>
+          <polyline points="20,18 20,10" stroke="#A855F7" stroke-width="3"/>
+          <polyline points="80,18 80,10" stroke="#A855F7" stroke-width="3"/>
+        </svg>`,
+        steps: [
+          "Duduk di bangku dengan sandaran tegak 90 derajat.",
+          "Pegang dumbbell setinggi telinga dengan siku berada sedikit di depan bidang tubuh.",
+          "Dorong dumbbell lurus ke atas hingga lengan hampir lurus di atas kepala.",
+          "Turunkan kembali perlahan selama 2 detik ke level telinga."
+        ],
+        tips: "Arahkan siku sedikit ke depan (scapular plane), jangan melebar lurus 180 derajat ke samping.",
+        mistakes: "Melengkungkan punggung bawah secara berlebihan saat mendorong beban."
+      },
+      {
+        id: "shoulder_2",
+        category: "SHOULDERS",
+        name: "Dumbbell Lateral Raises",
+        equipment: "Dumbbell Ringan",
+        difficulty: "Pemula",
+        primary: "Lateral Deltoid (Bahu Samping)",
+        secondary: "Traps Atas",
+        shortDesc: "Kunci utama untuk membuat bahu terlihat lebar dan memberikan ilusi pinggang yang ramping.",
+        rec: "3 Set × 12 - 15 Reps • Gunakan beban ringan",
+        svg: `<svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="50" cy="22" r="9" fill="#E2E2E6"/>
+          <line x1="50" y1="31" x2="50" y2="75" stroke="#E2E2E6" stroke-width="6"/>
+          <line x1="50" y1="38" x2="15" y2="38" stroke="#A855F7" stroke-width="5" stroke-linecap="round"/>
+          <line x1="50" y1="38" x2="85" y2="38" stroke="#A855F7" stroke-width="5" stroke-linecap="round"/>
+          <circle cx="15" cy="38" r="6" fill="#A855F7"/>
+          <circle cx="85" cy="38" r="6" fill="#A855F7"/>
+          <path d="M25 60 Q15 50 15 42" stroke="#A855F7" stroke-width="3" stroke-dasharray="2 2" fill="none"/>
+          <path d="M75 60 Q85 50 85 42" stroke="#A855F7" stroke-width="3" stroke-dasharray="2 2" fill="none"/>
+        </svg>`,
+        steps: [
+          "Berdiri tegak dengan memegang dumbbell ringan di samping paha.",
+          "Tekuk siku sedikit (15 derajat) dan condongkan badan ke depan sangat tipis.",
+          "Angkat lengan ke samping hingga setinggi bahu dengan memimpin menggunakan siku.",
+          "Turunkan perlahan secara terkontrol melawan gravitasi."
+        ],
+        tips: "Gunakan beban yang SANGAT RINGAN (2-4 kg). Beban terlalu berat justru akan dipikul leher.",
+        mistakes: "Mengayunkan pinggang atau mengangkat beban melebihi ketinggian bahu."
+      },
+      {
+        id: "shoulder_3",
+        category: "SHOULDERS",
+        name: "Face Pulls",
+        equipment: "Mesin Kabel & Rope",
+        difficulty: "Pemula",
+        primary: "Rear Deltoid (Bahu Belakang)",
+        secondary: "Rotator Cuff, Rhomboids",
+        shortDesc: "Penawar bahu bungkuk akibat sering bermain HP/laptop dan pelindung utama kesehatan sendi bahu.",
+        rec: "3 Set × 12 - 15 Reps • Tarik ke arah dahi",
+        svg: `<svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="70" cy="30" r="9" fill="#E2E2E6"/>
+          <line x1="70" y1="39" x2="70" y2="78" stroke="#E2E2E6" stroke-width="6"/>
+          <line x1="15" y1="30" x2="52" y2="30" stroke="#8E8E93" stroke-width="3"/>
+          <polyline points="52,30 65,22 72,22" stroke="#A855F7" stroke-width="5" stroke-linecap="round" fill="none"/>
+          <polyline points="52,30 65,38 72,38" stroke="#A855F7" stroke-width="5" stroke-linecap="round" fill="none"/>
+        </svg>`,
+        steps: [
+          "Pasang tali (rope) pada mesin kabel setinggi mata atau dahi.",
+          "Pegang tali dengan jempol menghadap ke arah tubuh.",
+          "Tarik tali langsung ke arah dahi sambil membuka kedua siku tinggi ke samping belakang.",
+          "Di akhir gerakan, putar tangan keluar dan tahan remasan bahu belakang 1 detik."
+        ],
+        tips: "Pastikan posisi siku selalu lebih tinggi dari pergelangan tangan sepanjang tarikan.",
+        mistakes: "Menarik ke arah leher bawah bukan ke arah dahi."
+      },
+
+      // LENGAN (ARMS)
+      {
+        id: "arm_1",
+        category: "ARMS",
+        name: "Dumbbell Bicep Curl",
+        equipment: "Dumbbell",
+        difficulty: "Pemula",
+        primary: "Biceps Brachii (Puncak Bisep)",
+        secondary: "Brachialis, Forearms",
+        shortDesc: "Gerakan klasik paling populer untuk membesarkan puncak otot lengan depan yang kekar.",
+        rec: "3 Set × 10 - 12 Reps • Istirahat 60s",
+        svg: `<svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="45" cy="22" r="9" fill="#E2E2E6"/>
+          <line x1="45" y1="31" x2="45" y2="75" stroke="#E2E2E6" stroke-width="6"/>
+          <line x1="45" y1="38" x2="45" y2="58" stroke="#F59E0B" stroke-width="6"/>
+          <line x1="45" y1="58" x2="68" y2="40" stroke="#F59E0B" stroke-width="5" stroke-linecap="round"/>
+          <circle cx="70" cy="38" r="8" fill="#F59E0B"/>
+          <path d="M45 70 Q65 65 68 46" stroke="#F59E0B" stroke-width="3" stroke-dasharray="2 2" fill="none"/>
+        </svg>`,
+        steps: [
+          "Berdiri tegak dengan sepasang dumbbell di samping paha.",
+          "Kunci siku di samping pinggang, hanya lengan bawah yang bergerak.",
+          "Angkat dumbbell sambil memutar telapak menghadap ke dada di puncak.",
+          "Remas bisep sekuat tenaga selama 1 detik di puncak, lalu turunkan perlahan."
+        ],
+        tips: "Bayangkan sikumu dipaku di pinggang; jangan biarkan siku terayun maju ke depan.",
+        mistakes: "Mengayunkan badan ke belakang untuk mengangkat beban yang terlalu berat."
+      },
+      {
+        id: "arm_2",
+        category: "ARMS",
+        name: "Dumbbell Hammer Curl",
+        equipment: "Dumbbell",
+        difficulty: "Pemula",
+        primary: "Brachialis & Lengan Bawah",
+        secondary: "Biceps Brachii",
+        shortDesc: "Menebalkan ukuran lengan dari samping dan memperkuat cengkeraman tangan (grip strength).",
+        rec: "3 Set × 10 - 12 Reps • Pegangan netral palu",
+        svg: `<svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="45" cy="22" r="9" fill="#E2E2E6"/>
+          <line x1="45" y1="31" x2="45" y2="75" stroke="#E2E2E6" stroke-width="6"/>
+          <line x1="45" y1="38" x2="45" y2="58" stroke="#F59E0B" stroke-width="6"/>
+          <line x1="45" y1="58" x2="68" y2="44" stroke="#F59E0B" stroke-width="5" stroke-linecap="round"/>
+          <rect x="65" y="32" width="8" height="24" rx="4" fill="#F59E0B"/>
+        </svg>`,
+        steps: [
+          "Pegang dumbbell dengan posisi telapak tangan saling berhadapan (seperti memegang palu).",
+          "Kunci siku di samping rusuk pinggang.",
+          "Angkat dumbbell ke atas ke arah bahu tanpa memutar pergelangan tangan.",
+          "Tahan kontraksi 1 detik di atas, lalu turunkan perlahan."
+        ],
+        tips: "Cengkeram dumbbell dengan kuat untuk mengaktifkan otot lengan bawah secara optimal.",
+        mistakes: "Pergelangan tangan menekuk lunglai saat mengangkat."
+      },
+      {
+        id: "arm_3",
+        category: "ARMS",
+        name: "Tricep Rope Pushdown",
+        equipment: "Mesin Kabel & Rope",
+        difficulty: "Pemula",
+        primary: "Triceps Brachii (Lengan Belakang)",
+        secondary: "Forearms",
+        shortDesc: "Membentuk bagian belakang lengan (ingat: otot trisep menyumbang 60% ukuran lengan atas!).",
+        rec: "3 Set × 12 Reps • Kunci siku di rusuk",
+        svg: `<svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="45" cy="25" r="9" fill="#E2E2E6"/>
+          <line x1="45" y1="34" x2="52" y2="70" stroke="#E2E2E6" stroke-width="6"/>
+          <line x1="25" y1="10" x2="48" y2="45" stroke="#8E8E93" stroke-width="3"/>
+          <line x1="45" y1="40" x2="50" y2="55" stroke="#F59E0B" stroke-width="6"/>
+          <line x1="50" y1="55" x2="55" y2="75" stroke="#F59E0B" stroke-width="5" stroke-linecap="round"/>
+          <circle cx="55" cy="78" r="5" fill="#F59E0B"/>
+          <polyline points="51,68 55,77 59,68" fill="none" stroke="#F59E0B" stroke-width="2"/>
+        </svg>`,
+        steps: [
+          "Pasang tali (rope) pada katrol kabel paling atas.",
+          "Condongkan badan sedikit ke depan dan kunci siku di samping rusuk.",
+          "Dorong tali ke bawah hingga siku lurus mengunci.",
+          "Di bagian bawah, pisahkan kedua ujung tali ke samping luar untuk remasan maksimal."
+        ],
+        tips: "Hanya lengan bawah yang boleh bergerak, siku tetap terkunci diam di samping tubuh.",
+        mistakes: "Siku bergerak maju mundur atau menggunakan bobot badan untuk menekan tali."
+      },
+
+      // PERUT & CORE
+      {
+        id: "core_1",
+        category: "CORE",
+        name: "Plank Standar",
+        equipment: "Bodyweight",
+        difficulty: "Pemula",
+        primary: "Transverse Abdominis (Otot Inti Dalam)",
+        secondary: "Rectus Abdominis, Glutes, Bahu",
+        shortDesc: "Latihan fondasi terbaik untuk membangun korset otot perut yang kokoh dan melindungi pinggang.",
+        rec: "3 Set × Tahan 30 - 45 Detik • Istirahat 45s",
+        svg: `<svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <line x1="10" y1="80" x2="90" y2="80" stroke="#636366" stroke-width="4"/>
+          <line x1="25" y1="55" x2="80" y2="55" stroke="#EC4899" stroke-width="8" stroke-linecap="round"/>
+          <circle cx="18" cy="52" r="8" fill="#E2E2E6"/>
+          <line x1="28" y1="58" x2="28" y2="80" stroke="#E2E2E6" stroke-width="6" stroke-linecap="round"/>
+          <line x1="80" y1="58" x2="80" y2="80" stroke="#E2E2E6" stroke-width="5" stroke-linecap="round"/>
+          <path d="M40 55 Q52 48 65 55" stroke="#3DDC84" stroke-width="2" fill="none"/>
+        </svg>`,
+        steps: [
+          "Tengkurap bertumpu pada kedua lengan bawah (forearms) dan jari kaki.",
+          "Posisikan siku tepat di bawah bahu.",
+          "Angkat tubuh hingga membentuk satu garis lurus sempurna dari kepala hingga tumit.",
+          "Kencangkan otot perut sekuat tenaga seperti hendak menahan pukulan di perut.",
+          "Tahan posisi sambil tetap bernapas secara teratur."
+        ],
+        tips: "Bernapaslah secara teratur, jangan menahan napas saat melakukan plank.",
+        mistakes: "Pinggul melorot ke bawah atau pantat terangkat terlalu tinggi menyerupai segitiga."
+      },
+      {
+        id: "core_2",
+        category: "CORE",
+        name: "Bicycle Crunches",
+        equipment: "Bodyweight",
+        difficulty: "Pemula",
+        primary: "Sixpack & Obliques (Perut Samping)",
+        secondary: "Hip Flexors",
+        shortDesc: "Dinobatkan sebagai gerakan perut paling efektif oleh riset ilmiah untuk memahat perut samping.",
+        rec: "3 Set × 15 - 20 Kayuhan total",
+        svg: `<svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="35" cy="40" r="8" fill="#E2E2E6"/>
+          <line x1="38" y1="46" x2="55" y2="60" stroke="#EC4899" stroke-width="7"/>
+          <polyline points="55,60 75,50 90,65" stroke="#E2E2E6" stroke-width="5" stroke-linecap="round" fill="none"/>
+          <polyline points="55,60 40,75 25,65" stroke="#E2E2E6" stroke-width="5" stroke-linecap="round" fill="none"/>
+          <line x1="32" y1="46" x2="48" y2="52" stroke="#EC4899" stroke-width="4"/>
+        </svg>`,
+        steps: [
+          "Berbaring terlentang di matras, letakkan jari tangan di samping pelipis kepala.",
+          "Angkat kaki dan tekuk lutut 90 derajat.",
+          "Putar tubuh bagian atas ke kanan sambil membawa siku kiri bertemu dengan lutut kanan yang ditekuk.",
+          "Lakukan bergantian kiri dan kanan dengan tempo terkendali seperti mengayuh sepeda."
+        ],
+        tips: "Fokus pada memutar bahu, bukan hanya menggerakkan siku.",
+        mistakes: "Menarik kepala dan leher menggunakan tangan yang dapat menyebabkan cedera leher."
+      },
+      {
+        id: "core_3",
+        category: "CORE",
+        name: "Lying Leg Raises",
+        equipment: "Bodyweight",
+        difficulty: "Pemula",
+        primary: "Lower Abs (Perut Bagian Bawah)",
+        secondary: "Hip Flexors",
+        shortDesc: "Menargetkan otot perut bagian bawah yang sering menjadi tempat timbunan lemak membandel.",
+        rec: "3 Set × 10 - 12 Reps • Gerakan lambat",
+        svg: `<svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <line x1="10" y1="75" x2="90" y2="75" stroke="#636366" stroke-width="4"/>
+          <circle cx="25" cy="65" r="8" fill="#E2E2E6"/>
+          <line x1="28" y1="70" x2="60" y2="70" stroke="#EC4899" stroke-width="7"/>
+          <line x1="60" y1="70" x2="60" y2="30" stroke="#EC4899" stroke-width="6" stroke-linecap="round"/>
+          <path d="M75 70 Q75 40 64 32" stroke="#EC4899" stroke-width="3" stroke-dasharray="2 2" fill="none"/>
+          <polyline points="60,38 60,30 68,30" fill="none" stroke="#EC4899" stroke-width="2"/>
+        </svg>`,
+        steps: [
+          "Berbaring terlentang dengan tangan di samping pinggul atau di bawah pantat.",
+          "Rapatkan kedua kaki dan angkat lurus ke atas hingga membentuk sudut 90 derajat.",
+          "Tahan sejenak di atas sambil mengencangkan perut bawah.",
+          "Turunkan kedua kaki perlahan ke bawah tanpa menyentuh lantai (5 cm di atas matras)."
+        ],
+        tips: "Pastikan punggung bawah selalu menempel rata pada matras sepanjang gerakan.",
+        mistakes: "Punggung bawah melengkung terangkat dari lantai saat kaki turun."
+      }
+    ];
+
+    // Database Tutorial Pemula (6 Pelajaran Fundamental)
+    const beginnerLessons = [
+      {
+        num: 1,
+        title: "Mindset & Cara Memulai Latihan dari Nol",
+        tag: "Pondasi Utama",
+        icon: "🧠",
+        points: "• Mulai dengan 3 hari seminggu (40-50 menit per sesi).<br>• Pelajari teknik dan postur (Form) sebelum menambah beban berat.<br>• Ego lifting (beban terlalu berat) adalah penyebab utama cedera.<br>• Pegal otot (DOMS) di 1-2 minggu awal sangat wajar.",
+        rule: "Konsistensi mengalahkan intensitas yang hanya sesekali."
+      },
+      {
+        num: 2,
+        title: "Pemanasan Dinamis (Warm-Up) Wajib 5 Menit",
+        tag: "Cegah Cedera",
+        icon: "🔥",
+        points: "• Pemanasan menaikkan suhu tubuh dan melumasi persendian sendi.<br>• Contoh: Arm circles (putaran lengan), Torso twist, Jumping jacks.<br>• Lakukan 1 set pemanasan dengan beban sangat ringan (30-40%) sebelum set utama.",
+        rule: "5 menit pemanasan menghindarkan dari berbulan-bulan cedera sendi."
+      },
+      {
+        num: 3,
+        title: "Pahami Repetisi (Reps), Set & Progressive Overload",
+        tag: "Konsep Latihan",
+        icon: "📊",
+        points: "• Repetisi (Reps): 8 – 12 reps ideal untuk membentuk otot (Hipertrofi).<br>• Set: 3 – 4 set per gerakan latihan.<br>• Istirahat (Rest): 60 – 90 detik antar set untuk memulihkan tenaga.<br>• Progressive Overload: Tambah beban bertahap saat gerakan sudah terasa ringan.",
+        rule: "Targetkan 3 set × 8-12 repetisi di mana repetisi ke-10 mulai menantang."
+      },
+      {
+        num: 4,
+        title: "Teknik Pernapasan yang Benar",
+        tag: "Efisiensi Tenaga",
+        icon: "🫁",
+        points: "• Hembuskan Napas (Exhale / Buang Napas) saat mendorong atau menarik beban.<br>• Tarik Napas (Inhale) saat menurunkan beban ke posisi awal.<br>• Kencangkan otot perut (Bracing core) untuk menopang tulang belakang.",
+        rule: "Buang napas saat fase berat (dorong/tarik), tarik napas saat menurunkan."
+      },
+      {
+        num: 5,
+        title: "Jadwal Latihan 3 Hari Pemula (Full-Body Split)",
+        tag: "Jadwal Efektif",
+        icon: "📅",
+        points: "• <b>Senin</b>: Dada (Bench/Pushup) + Punggung (Lat Pulldown) + Kaki (Squat).<br>• <b>Rabu</b>: Punggung (Bent-Over Row) + Dada (Incline) + Lengan (Curls).<br>• <b>Jumat</b>: Kaki (Squat/Lunges) + Bahu (Shoulder Press) + Perut (Plank).<br>• Hari lainnya: Istirahat untuk pemulihan jaringan otot.",
+        rule: "Otot tumbuh saat kamu beristirahat di hari libur, bukan saat di gym."
+      },
+      {
+        num: 6,
+        title: "Nutrisi, Hidrasi & Waktu Tidur",
+        tag: "Pertumbuhan Otot",
+        icon: "🥗",
+        points: "• Protein: 1.4 – 1.8 gram per kg berat badan (telur, ayam, tempe, tahu, ikan).<br>• Air Minum: 2.5 – 3 Liter per hari untuk fungsi kontraksi otot.<br>• Tidur: 7 – 8 jam setiap malam untuk pelepasan hormon pertumbuhan alami.",
+        rule: "Hasil = 50% Latihan Benar + 30% Makanan Bergizi + 20% Tidur Cukup."
+      }
+    ];
+
+    // Helper: Render Exercises into DOM
+    let currentCategoryFilter = 'ALL';
+    function renderExercises(cat) {
+      currentCategoryFilter = cat;
+      const container = document.getElementById('exerciseListContainer');
+      container.innerHTML = '';
+
+      const list = cat === 'ALL' ? exerciseData : exerciseData.filter(e => e.category === cat);
+
+      const categoryColors = {
+        BACK: '#38BDF8',
+        CHEST: '#FF7E67',
+        LEGS: '#3DDC84',
+        SHOULDERS: '#A855F7',
+        ARMS: '#F59E0B',
+        CORE: '#EC4899'
+      };
+
+      list.forEach(ex => {
+        const color = categoryColors[ex.category] || '#FF5A3C';
+        const card = document.createElement('div');
+        card.className = 'exercise-card';
+        card.onclick = () => openExerciseDetail(ex.id);
+        card.innerHTML = `
+          <div class="exercise-thumb">
+            ${ex.svg}
+          </div>
+          <div class="exercise-meta-box">
+            <div class="exercise-badges-row">
+              <span class="badge-tag" style="background: ${color}25; color: ${color};">${ex.category}</span>
+              <span class="badge-tag" style="background: var(--elevated); color: var(--text-gray);">${ex.difficulty}</span>
+            </div>
+            <div class="exercise-title">${ex.name}</div>
+            <div class="exercise-target">🎯 ${ex.primary}</div>
+            <div class="exercise-footer-line">
+              <span>🛠️ ${ex.equipment}</span>
+              <span style="color: var(--coral); font-weight: 700;">Lihat Detail ➔</span>
+            </div>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    // Helper: Render Beginner Lessons
+    function renderLessons() {
+      const container = document.getElementById('lessonListContainer');
+      container.innerHTML = '';
+
+      beginnerLessons.forEach(l => {
+        const card = document.createElement('div');
+        card.className = 'lesson-card';
+        card.innerHTML = `
+          <div class="lesson-header">
+            <div class="lesson-num">${l.num}</div>
+            <div>
+              <div style="font-size: 10px; font-weight: 800; color: var(--coral-light); text-transform: uppercase;">MODUL ${l.num} • ${l.tag}</div>
+              <div style="font-size: 14px; font-weight: 800; color: #fff;">${l.icon} ${l.title}</div>
+            </div>
+          </div>
+          <div class="lesson-points">
+            ${l.points}
+          </div>
+          <div class="lesson-rule">
+            ⚡ Kunci Emas: ${l.rule}
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    // Category Filter Handler
+    function filterCategory(cat, elem) {
+      document.querySelectorAll('.filter-pill').forEach(p => p.classList.remove('active'));
+      elem.classList.add('active');
+
+      const titleMap = {
+        ALL: 'Katalog Lengkap Gerakan',
+        BACK: 'Fokus Otot Punggung (Back)',
+        CHEST: 'Fokus Otot Dada (Chest)',
+        LEGS: 'Fokus Otot Kaki (Legs)',
+        SHOULDERS: 'Fokus Otot Bahu (Shoulders)',
+        ARMS: 'Fokus Otot Lengan (Arms)',
+        CORE: 'Fokus Otot Perut & Inti (Core)'
+      };
+      const subMap = {
+        ALL: 'Klik salah satu gerakan untuk melihat foto/diagram visual, langkah, dan tips form!',
+        BACK: 'Membangun lebar sayap (Lats), ketebalan punggung tengah, dan postur tegap.',
+        CHEST: 'Membentuk dada atas, tengah, dan dorongan tubuh yang kokoh.',
+        LEGS: 'Melatih paha depan (Quads), paha belakang (Hamstrings), dan pantat (Glutes).',
+        SHOULDERS: 'Membentuk bahu bulat 3D agar tampak bidang dan atletis.',
+        ARMS: 'Melatih puncak bisep dan ketebalan trisep lengan atas.',
+        CORE: 'Membangun ketahanan inti perut, sixpack, dan pelindung tulang belakang.'
+      };
+
+      document.getElementById('catBannerTitle').innerText = titleMap[cat] || 'Katalog Gerakan';
+      document.getElementById('catBannerSubtitle').innerText = subMap[cat] || '';
+
+      renderExercises(cat);
+    }
+
+    // Sub-tab Navigation (Katalog vs Tutorial)
+    function switchSubTab(subTabIdx) {
+      const btnEx = document.getElementById('subtabBtnExercises');
+      const btnTut = document.getElementById('subtabBtnTutorial');
+      const viewEx = document.getElementById('subviewExercises');
+      const viewTut = document.getElementById('subviewTutorial');
+
+      if (subTabIdx === 0) {
+        btnEx.classList.add('active');
+        btnTut.classList.remove('active');
+        viewEx.style.display = 'flex';
+        viewTut.style.display = 'none';
+      } else {
+        btnTut.classList.add('active');
+        btnEx.classList.remove('active');
+        viewTut.style.display = 'flex';
+        viewEx.style.display = 'none';
+      }
+    }
+
+    // Exercise Detail Modal
+    function openExerciseDetail(id) {
+      const ex = exerciseData.find(e => e.id === id);
+      if (!ex) return;
+
+      document.getElementById('detailExerciseName').innerText = ex.name;
+      document.getElementById('detailVisualContainer').innerHTML = ex.svg;
+      document.getElementById('detailEquipmentTag').innerText = `🛠️ ${ex.equipment} • ${ex.difficulty}`;
+      document.getElementById('detailPrimaryMuscle').innerText = ex.primary;
+      document.getElementById('detailSecondaryMuscle').innerText = ex.secondary;
+      document.getElementById('detailRecommendation').innerText = ex.rec;
+
+      const stepsContainer = document.getElementById('detailStepsContainer');
+      stepsContainer.innerHTML = '';
+      ex.steps.forEach((step, i) => {
+        const row = document.createElement('div');
+        row.style.display = 'flex';
+        row.style.gap = '8px';
+        row.style.fontSize = '12px';
+        row.style.color = 'var(--text-gray)';
+        row.innerHTML = `<b style="color: var(--coral); min-width: 16px;">${i + 1}.</b> <span>${step}</span>`;
+        stepsContainer.appendChild(row);
+      });
+
+      document.getElementById('detailTipsContainer').innerHTML = ex.tips;
+      document.getElementById('detailMistakesContainer').innerHTML = ex.mistakes;
+
+      document.getElementById('modalExerciseDetail').style.display = 'flex';
+    }
+
+    function closeExerciseDetailModal() {
+      document.getElementById('modalExerciseDetail').style.display = 'none';
+    }
+
+    // Custom Photo Upload Handler
+    function handleProfilePhotoUpload(input) {
+      if (input.files && input.files[0]) {
+        const file = input.files[0];
+        const reader = new FileReader();
+        reader.onload = function (e) {
+          profileData.photoUrl = e.target.result;
+          updateModalAvatarPreview();
+          showToast('Foto profil berhasil dipilih! Tekan Simpan untuk menerapkan ✨');
+        };
+        reader.readAsDataURL(file);
+      }
+    }
+
+    function removeProfilePhoto() {
+      profileData.photoUrl = null;
+      updateModalAvatarPreview();
+      showToast('Foto dihapus. Avatar emoji kembali aktif.');
+    }
+
+    function updateModalAvatarPreview() {
+      const preview = document.getElementById('modalAvatarPreview');
+      const btnRemove = document.getElementById('btnRemovePhoto');
+      const typeLabel = document.getElementById('modalAvatarTypeLabel');
+      const subLabel = document.getElementById('modalAvatarSubLabel');
+
+      if (profileData.photoUrl) {
+        preview.innerHTML = `<img src="${profileData.photoUrl}" style="width:100%; height:100%; object-fit:cover; border-radius:50%;">`;
+        btnRemove.style.display = 'inline-block';
+        typeLabel.innerText = 'Foto Kustom Aktif';
+        subLabel.innerText = 'Foto dari file perangkat kamu';
+      } else {
+        preview.innerHTML = profileData.avatar;
+        btnRemove.style.display = 'none';
+        typeLabel.innerText = 'Avatar Emoji Aktif';
+        subLabel.innerText = 'Tampilan: ' + profileData.avatar;
+      }
+    }
+
+    function applyCustomEmoji() {
+      const val = document.getElementById('inputCustomEmoji').value.trim();
+      if (val) {
+        profileData.avatar = val;
+        profileData.photoUrl = null;
+        updateModalAvatarPreview();
+        document.getElementById('inputCustomEmoji').value = '';
+        showToast('Emoji/karakter "' + val + '" dipilih!');
+      }
+    }
+
+    // Modal Profile Selectors
+    function selectAvatar(elem, emoji) {
+      document.querySelectorAll('#avatarPicker .chip-item').forEach(c => c.classList.remove('active'));
+      elem.classList.add('active');
+      profileData.avatar = emoji;
+      profileData.photoUrl = null;
+      updateModalAvatarPreview();
+    }
+
+    function selectLevel(elem, level) {
+      document.querySelectorAll('#levelPicker .chip-item').forEach(c => c.classList.remove('active'));
+      elem.classList.add('active');
+      profileData.level = level;
+    }
+
+    function selectFavCat(elem, cat) {
+      document.querySelectorAll('#favCatPicker .chip-item').forEach(c => c.classList.remove('active'));
+      elem.classList.add('active');
+      profileData.favoriteCategory = cat;
+    }
+
+    function selectGoal(elem, goal) {
+      document.querySelectorAll('#goalPicker .chip-item').forEach(c => c.classList.remove('active'));
+      elem.classList.add('active');
+      profileData.goal = goal;
+    }
+
+    function openEditProfileModal() {
+      document.getElementById('inputProfileName').value = profileData.name;
+      document.getElementById('inputProfileBio').value = profileData.bio || "";
+      document.getElementById('inputAge').value = profileData.age;
+      document.getElementById('selectGender').value = profileData.gender;
+      updateModalAvatarPreview();
+      document.getElementById('modalEditProfile').style.display = 'flex';
+    }
+
+    function closeEditProfileModal() {
+      document.getElementById('modalEditProfile').style.display = 'none';
+    }
+
+    function saveProfileChanges() {
+      const newName = document.getElementById('inputProfileName').value.trim();
+      if (newName) profileData.name = newName;
+      profileData.bio = document.getElementById('inputProfileBio').value.trim() || "Konsisten latihan untuk tubuh lebih sehat! 💪";
+      profileData.gender = document.getElementById('selectGender').value;
+      profileData.age = parseInt(document.getElementById('inputAge').value) || 24;
+
+      updateAvatarDisplay();
+      closeEditProfileModal();
+      showToast(`Profil "${profileData.name}" berhasil diperbarui! 🎉`);
+      updateBmi();
+    }
+
+    function updateAvatarDisplay() {
+      const avatarDisplay = document.getElementById('avatarDisplay');
+      const headerIcon = document.getElementById('headerIcon');
+
+      if (profileData.photoUrl) {
+        avatarDisplay.innerHTML = `<img src="${profileData.photoUrl}" style="width:100%; height:100%; object-fit:cover; border-radius:50%;">`;
+        headerIcon.innerHTML = `<img src="${profileData.photoUrl}" style="width:100%; height:100%; object-fit:cover; border-radius:50%;">`;
+      } else {
+        avatarDisplay.innerHTML = profileData.avatar;
+        headerIcon.innerHTML = profileData.avatar;
+      }
+
+      document.getElementById('userNameDisplay').innerText = profileData.name;
+      document.getElementById('headerTitle').innerText = `Halo, ${profileData.name}!`;
+      document.getElementById('userBioDisplay').innerText = `${profileData.gender} • ${profileData.age} Tahun • ${profileData.level}`;
+      document.getElementById('userGoalDisplay').innerText = profileData.goal;
+      document.getElementById('userFavCategoryDisplay').innerText = profileData.favoriteCategory;
+      document.getElementById('userMottoDisplay').innerText = `“${profileData.bio}”`;
+    }
+
+    // Tab Navigation (4 Tabs: 0: Jadwal, 1: Panduan, 2: Aktivitas, 3: Profil)
+    function switchTab(index, elem) {
+      document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+      elem.classList.add('active');
+
+      const tabs = ['tabJadwal', 'tabPanduan', 'tabAktivitas', 'tabProfil'];
+      tabs.forEach((id, i) => {
+        document.getElementById(id).style.display = i === index ? 'flex' : 'none';
+      });
+
+      const fab = document.getElementById('fabAdd');
+      fab.style.display = index === 0 ? 'flex' : 'none';
+
+      const icon = document.getElementById('headerIcon');
+      const title = document.getElementById('headerTitle');
+      const sub = document.getElementById('headerSubtitle');
+
+      if (index === 0) {
+        updateAvatarDisplay();
+        title.innerText = `Halo, ${profileData.name}!`;
+        sub.innerText = 'Jadwal & Pengingat Latihan';
+      } else if (index === 1) {
+        icon.innerText = '📖';
+        title.innerText = 'Panduan & Gerakan';
+        sub.innerText = 'Katalog Gerakan & Tutorial Pemula';
+      } else if (index === 2) {
+        icon.innerText = '🏆';
+        title.innerText = 'Aktivitas & Prestasi';
+        sub.innerText = 'Streak, Level & Badges';
+      } else {
+        updateAvatarDisplay();
+        title.innerText = `Profil ${profileData.name}`;
+        sub.innerText = 'Kebugaran & Metrik Tubuh';
+      }
+    }
+
+    // Audio & Alarm Helpers
+    function getAudioContext() {
+      if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      if (audioCtx.state === 'suspended') audioCtx.resume();
+      return audioCtx;
+    }
+
+    function playSynthSound(type) {
+      stopAllAudio();
+      try {
+        const ctx = getAudioContext();
+        let step = 0;
+        synthInterval = setInterval(() => {
+          if (!audioCtx) return;
+          const now = ctx.currentTime;
+          if (type === 'synth_gym') {
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.type = 'sine';
+            const freq = (step % 2 === 0) ? 140 : 80;
+            osc.frequency.setValueAtTime(freq, now);
+            osc.frequency.exponentialRampToValueAtTime(35, now + 0.2);
+            gain.gain.setValueAtTime(0.7, now);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + 0.2);
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.start(now);
+            osc.stop(now + 0.22);
+          } else if (type === 'synth_rock') {
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.type = 'sawtooth';
+            const chord = [220, 293, 330, 440][step % 4];
+            osc.frequency.setValueAtTime(chord, now);
+            gain.gain.setValueAtTime(0.35, now);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + 0.25);
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.start(now);
+            osc.stop(now + 0.26);
+          } else if (type === 'synth_edm') {
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.type = 'triangle';
+            const edmFreq = [110, 110, 165, 220, 146][step % 5];
+            osc.frequency.setValueAtTime(edmFreq, now);
+            gain.gain.setValueAtTime(0.6, now);
+            gain.gain.exponentialRampToValueAtTime(0.01, now + 0.18);
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.start(now);
+            osc.stop(now + 0.19);
+          } else if (type === 'synth_horn') {
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.type = 'square';
+            const hornFreq = [261.63, 329.63, 392.00, 523.25][step % 4];
+            osc.frequency.setValueAtTime(hornFreq, now);
+            gain.gain.setValueAtTime(0.25, now);
+            gain.gain.exponentialRampToValueAtTime(0.01, now + 0.35);
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.start(now);
+            osc.stop(now + 0.36);
+          } else {
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(880, now);
+            gain.gain.setValueAtTime(0.4, now);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + 0.15);
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.start(now);
+            osc.stop(now + 0.16);
+          }
+          step++;
+        }, 280);
+      } catch (e) {
+        console.log("Audio error:", e);
+      }
+    }
+
+    function stopAllAudio() {
+      if (synthInterval) {
+        clearInterval(synthInterval);
+        synthInterval = null;
+      }
+      if (customAudioElement) {
+        customAudioElement.pause();
+        customAudioElement.currentTime = 0;
+      }
+    }
+
+    function previewCurrentSound() {
+      if (customAudioElement) {
+        customAudioElement.play();
+        showToast('Memutar musik kustom...');
+        setTimeout(() => stopAllAudio(), 4000);
+      } else {
+        playSynthSound(selectedSoundType);
+        showToast('Memutar: ' + selectedMusicName);
+        setTimeout(() => stopAllAudio(), 4000);
+      }
+    }
+
+    function handleCustomAudioUpload(input) {
+      if (input.files && input.files[0]) {
+        const file = input.files[0];
+        const audioUrl = URL.createObjectURL(file);
+        if (customAudioElement) customAudioElement.pause();
+        customAudioElement = new Audio(audioUrl);
+        customAudioElement.loop = true;
+        selectedMusicName = "Lagu: " + file.name.substring(0, 24);
+        selectedSoundType = "custom";
+        document.querySelectorAll('#musicPicker .chip-music').forEach(c => c.classList.remove('active'));
+        document.getElementById('customAudioStatus').innerHTML = `✅ <b>${file.name}</b> siap digunakan!`;
+        showToast('Musik kustom berhasil dimuat! 🎵');
+      }
+    }
+
+    function toggleSwitch(elem) {
+      elem.classList.toggle('off');
+    }
+
+    function showToast(msg) {
+      const toast = document.getElementById('toast');
+      toast.innerText = msg;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 2400);
+    }
+
+    function finishWorkout(splitName) {
+      currentXp += 50;
+      completedCount++;
+      document.getElementById('xpBadge').innerText = currentXp + ' XP';
+      document.getElementById('xpCurrent').innerText = currentXp + ' XP';
+      document.getElementById('weekDoneCount').innerText = completedCount + 'x Sesi';
+      const progressPercent = Math.min(100, Math.round((currentXp / 500) * 100));
+      document.getElementById('progressFill').style.width = progressPercent + '%';
+      showToast(`Latihan ${splitName} selesai! +50 XP 🎉`);
+    }
+
+    function updateBmi() {
+      const h = parseFloat(document.getElementById('heightSlider').value);
+      const w = parseFloat(document.getElementById('weightSlider').value);
+
+      document.getElementById('heightText').innerText = h + ' cm';
+      document.getElementById('weightText').innerText = w + ' kg';
+      document.getElementById('idealHeightInfo').innerText = h + ' cm';
+
+      const hM = h / 100;
+      const bmi = (w / (hM * hM)).toFixed(1);
+      document.getElementById('bmiVal').innerText = bmi;
+
+      const pill = document.getElementById('bmiPill');
+      const bmiVal = parseFloat(bmi);
+      if (bmiVal < 18.5) {
+        pill.innerText = 'Kurus';
+        pill.style.background = 'rgba(56, 189, 248, 0.2)';
+        pill.style.color = '#38bdf8';
+      } else if (bmiVal <= 24.9) {
+        pill.innerText = 'Ideal (Normal)';
+        pill.style.background = 'rgba(61, 220, 132, 0.2)';
+        pill.style.color = '#3DDC84';
+      } else if (bmiVal <= 29.9) {
+        pill.innerText = 'Kelebihan Berat';
+        pill.style.background = 'rgba(255, 152, 0, 0.2)';
+        pill.style.color = '#ff9800';
+      } else {
+        pill.innerText = 'Obesitas';
+        pill.style.background = 'rgba(239, 68, 68, 0.2)';
+        pill.style.color = '#ef4444';
+      }
+
+      const minW = (18.5 * hM * hM).toFixed(1);
+      const maxW = (24.9 * hM * hM).toFixed(1);
+      document.getElementById('idealWeightRange').innerText = `${minW} – ${maxW} kg`;
+
+      const waterMl = Math.round(w * 35);
+      document.getElementById('waterVal').innerText = (waterMl / 1000).toFixed(1) + ' L';
+      document.getElementById('waterMl').innerText = waterMl.toLocaleString() + ' ml / hari';
+
+      const bmr = Math.round(88.362 + (13.397 * w) + (4.799 * h) - (5.677 * profileData.age));
+      document.getElementById('bmrVal').innerText = bmr.toLocaleString();
+    }
+
+    function nextQuote() {
+      qIdx = (qIdx + 1) % quotes.length;
+      document.getElementById('quoteText').innerText = quotes[qIdx];
+    }
+
+    function openAddReminderModal() {
+      document.getElementById('modalAddReminder').style.display = 'flex';
+    }
+
+    function closeAddReminderModal() {
+      document.getElementById('modalAddReminder').style.display = 'none';
+      stopAllAudio();
+    }
+
+    function selectSplit(elem, split) {
+      document.querySelectorAll('#splitPicker .chip-item').forEach(c => c.classList.remove('active'));
+      elem.classList.add('active');
+      selectedSplit = split;
+    }
+
+    let selectedSplit = 'Dada & Trisep';
+    function selectMusicPreset(elem, musicName, soundType) {
+      document.querySelectorAll('#musicPicker .chip-music').forEach(c => c.classList.remove('active'));
+      elem.classList.add('active');
+      selectedMusicName = musicName;
+      selectedSoundType = soundType;
+      customAudioElement = null;
+      document.getElementById('customAudioStatus').innerText = 'Preset dipilih: ' + musicName;
+      playSynthSound(soundType);
+      setTimeout(() => stopAllAudio(), 2500);
+    }
+
+    function saveNewReminder() {
+      const timeVal = document.getElementById('inputAlarmTime').value || '07:00';
+      const container = document.getElementById('reminderListContainer');
+      const newCard = document.createElement('div');
+      newCard.className = 'reminder-item';
+      newCard.innerHTML = `
+        <div>
+          <div class="reminder-time">${timeVal}</div>
+          <div class="reminder-split">${selectedSplit}</div>
+          <div class="reminder-meta">
+            <span>Setiap Hari</span>
+            <span class="music-badge">🎵 ${selectedMusicName}</span>
+          </div>
+        </div>
+        <div class="action-row">
+          <button class="btn-done" onclick="finishWorkout('${selectedSplit}')">✓ Selesai</button>
+          <div class="toggle-switch" onclick="toggleSwitch(this)"><div class="toggle-knob"></div></div>
+        </div>
+      `;
+      container.prepend(newCard);
+      closeAddReminderModal();
+      showToast(`Alarm ${selectedSplit} jam ${timeVal} tersimpan! 🔔`);
+    }
+
+    function openAlarmModal() {
+      document.getElementById('alarmSoundNameDisplay').innerText = '🎵 Memutar: ' + selectedMusicName;
+      document.getElementById('alarmRingingAvatar').innerText = profileData.avatar;
+      document.getElementById('alarmModal').classList.add('active');
+      if (customAudioElement) {
+        customAudioElement.currentTime = 0;
+        customAudioElement.play();
+      } else {
+        playSynthSound(selectedSoundType);
+      }
+    }
+
+    function closeAlarmModal() {
+      document.getElementById('alarmModal').classList.remove('active');
+      stopAllAudio();
+    }
+
+    function finishWorkoutFromAlarm() {
+      closeAlarmModal();
+      finishWorkout(selectedSplit);
+    }
+
+    function snoozeAlarm() {
+      closeAlarmModal();
+      showToast('Alarm ditunda 5 menit ⏰');
+    }
+
+    // Initialize all components on load
+    renderExercises('ALL');
+    renderLessons();
+    updateAvatarDisplay();
+    updateBmi();
+  </script>
+</body>
+
+</html>

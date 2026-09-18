@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <!-- Clean Dumbbell icon for Android notification bar -->
+    <path
+        android:fillColor="#FFFFFFFF"
+        android:pathData="M20.57,14.86L22,13.43L20.57,12L17,15.57L8.43,7L12,3.43L10.57,2L9.14,3.43L7.71,2L5.57,4.14L7,5.57L5.57,7L2,10.57L3.43,12L4.86,10.57L8.43,14.14L7,15.57L8.43,17L9.86,15.57L12,17.71L10.57,19.14L12,20.57L13.43,19.14L14.86,20.57L17,18.43L15.57,17L17,15.57L20.57,19.14L22,17.71L20.57,16.29L22,14.86L20.57,14.86Z M6.29,6.29L4.86,4.86L5.57,4.14L7,5.57L6.29,6.29Z M17.71,17.71L16.29,16.29L17,15.57L18.43,17L17.71,17.71Z" />
+</vector>

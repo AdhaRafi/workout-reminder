@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">Workout Reminder</string>
+    <string name="channel_name">Pengingat Latihan</string>
+    <string name="channel_description">Notifikasi jadwal split latihan harian</string>
+    <string name="notification_title">Waktunya Latihan!</string>
+    <string name="notification_action_done">Selesai</string>
+</resources>
