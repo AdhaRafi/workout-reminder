@@ -52,6 +52,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.workoutreminder.app.MainActivity
 import com.workoutreminder.app.WorkoutApplication
+import android.widget.Toast
+import com.workoutreminder.app.alarm.NotificationHelper
 import com.workoutreminder.app.alarm.AlarmScheduler
 import com.workoutreminder.app.alarm.AlarmSoundService
 import com.workoutreminder.app.data.entity.ReminderEntity
@@ -72,14 +74,18 @@ import java.time.format.DateTimeFormatter
 
 class AlarmActivity : ComponentActivity() {
 
+    private var activeReminderId: Int = -1
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         turnOnScreenAndDismissKeyguard()
 
         val reminderId = intent.getIntExtra("reminder_id", -1)
+        activeReminderId = reminderId
         val splitName = intent.getStringExtra("split_name") ?: "Latihan Harian"
         val soundName = intent.getStringExtra("sound_name") ?: "Energetic Gym Beat"
+        val soundUri = intent.getStringExtra("sound_uri")
 
         val themeMode = getSharedPreferences("workout_user_profile", Context.MODE_PRIVATE)
             .getString("key_theme_mode", "SYSTEM") ?: "SYSTEM"
@@ -97,12 +103,12 @@ class AlarmActivity : ComponentActivity() {
                     splitName = splitName,
                     soundName = soundName,
                     onDone = {
-                        stopAlarm()
+                        stopAlarm(reminderId)
                         recordCompletion(reminderId, splitName)
                         finish()
                     },
                     onStartWorkout = {
-                        stopAlarm()
+                        stopAlarm(reminderId)
                         val mainIntent = Intent(this, MainActivity::class.java).apply {
                             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
                         }
@@ -110,8 +116,8 @@ class AlarmActivity : ComponentActivity() {
                         finish()
                     },
                     onSnooze = {
-                        stopAlarm()
-                        snoozeAlarm(reminderId, splitName)
+                        stopAlarm(reminderId)
+                        snoozeAlarm(reminderId, splitName, soundName, soundUri)
                         finish()
                     }
                 )
@@ -136,8 +142,13 @@ class AlarmActivity : ComponentActivity() {
         }
     }
 
-    private fun stopAlarm() {
+    private fun stopAlarm(reminderId: Int = -1) {
         AlarmSoundService.stopAlarm(this)
+        val idToCancel = if (reminderId != -1) reminderId else activeReminderId
+        if (idToCancel != -1) {
+            NotificationHelper.cancelNotification(this, NotificationHelper.getNotificationId(idToCancel))
+        }
+        NotificationHelper.cancelNotification(this, 99991)
     }
 
     private fun recordCompletion(reminderId: Int, splitName: String) {
@@ -146,27 +157,27 @@ class AlarmActivity : ComponentActivity() {
             try {
                 repository.recordCompletion(
                     splitName = splitName,
-                    reminderId = if (reminderId != -1) reminderId else null
+                    reminderId = if (reminderId != -1 && reminderId < 90000) reminderId else null
                 )
             } catch (_: Exception) {}
         }
     }
 
-    private fun snoozeAlarm(reminderId: Int, splitName: String) {
-        val snoozeTime = LocalTime.now().plusMinutes(5)
-        val tempReminder = ReminderEntity(
-            id = if (reminderId != -1) reminderId + 90000 else 99999,
-            splitName = "$splitName (Tunda)",
-            hour = snoozeTime.hour,
-            minute = snoozeTime.minute,
-            daysOfWeek = listOf(java.time.LocalDate.now().dayOfWeek.value),
-            isActive = true
+    private fun snoozeAlarm(reminderId: Int, splitName: String, soundName: String, soundUri: String?) {
+        AlarmScheduler.scheduleSnooze(
+            context = this,
+            reminderId = reminderId,
+            splitName = splitName,
+            snoozeMinutes = 5,
+            useSoundAlarm = true,
+            soundName = soundName,
+            soundUri = soundUri
         )
-        AlarmScheduler.schedule(this, tempReminder)
+        Toast.makeText(this, "Alarm ditunda 5 menit ⏱️", Toast.LENGTH_SHORT).show()
     }
 
     override fun onDestroy() {
-        stopAlarm()
+        stopAlarm(activeReminderId)
         super.onDestroy()
     }
 }

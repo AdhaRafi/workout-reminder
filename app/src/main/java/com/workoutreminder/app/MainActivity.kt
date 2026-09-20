@@ -102,6 +102,13 @@ class MainActivity : ComponentActivity() {
                     hasNotificationPermission = isGranted
                 }
 
+                // Otomatis minta izin notifikasi saat pertama kali dibuka jika belum diizinkan (Android 13+)
+                androidx.compose.runtime.LaunchedEffect(Unit) {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && !hasNotificationPermission) {
+                        notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+                    }
+                }
+
                 MainScreen(
                     viewModel = viewModel,
                     taskViewModel = taskViewModel,
